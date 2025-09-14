@@ -9,7 +9,6 @@
     "editor.formatOnSaveMode": "modifications",
     "editor.formatOnSave": true,
     "isort.importStrategy": "fromEnvironment",
-    "ruff.lint.run": "onSave",
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "editor.suggest.insertMode": "replace",
