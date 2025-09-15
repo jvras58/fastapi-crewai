@@ -14,6 +14,8 @@ class Settings(BaseSettings):
 
     DB_URL: str
 
+    GROQ_API_KEY: str
+
     SECURITY_ALGORITHM: str
     SECURITY_ACCESS_TOKEN_EXPIRE_MINUTES: int
 
