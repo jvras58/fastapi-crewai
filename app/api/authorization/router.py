@@ -16,7 +16,10 @@ from app.database.session import get_session
 from app.models.authorization import Authorization
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 from app.utils.generic_controller import GenericController
 
 router = APIRouter()
@@ -55,10 +58,15 @@ def create_authorization(
 
 
 @router.get(
-    '/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=AuthorizationListSchema
+    '/',
+    status_code=HTTP_STATUS.HTTP_200_OK,
+    response_model=AuthorizationListSchema,
 )
 def get_all_authorizations(
-    db_session: Session, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    db_session: Session,
+    current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
 ):
     validate_transaction_access(db_session, current_user, op.OP_1020003.value)
     authorizations = controller.get_all(db_session, skip, limit)
@@ -123,7 +131,9 @@ def update_authorization(
 
     validate_transaction_access(db_session, current_user, op.OP_1020002.value)
 
-    new_authorization: Authorization = Authorization(**authorization.model_dump())
+    new_authorization: Authorization = Authorization(
+        **authorization.model_dump()
+    )
     new_authorization.id = autorization_id
     new_authorization.audit_user_ip = request.client.host
     new_authorization.audit_user_login = current_user.username

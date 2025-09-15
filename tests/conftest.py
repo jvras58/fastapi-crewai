@@ -13,7 +13,10 @@ from app.models.user import User
 from app.startup import app
 from app.utils.base_model import Base
 from app.utils.security import get_password_hash
-from tests.factory.assignment_factory import AssignmentFactory, create_assignment
+from tests.factory.assignment_factory import (
+    AssignmentFactory,
+    create_assignment,
+)
 from tests.factory.authorization_factory import (
     AuthorizationFactory,
     create_authorization,

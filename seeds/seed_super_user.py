@@ -23,7 +23,9 @@ def seed_super_user():
             db_session.commit()
             db_session.refresh(admin_user)
         else:
-            admin_user = db_session.query(User).filter_by(username='admin').first()
+            admin_user = (
+                db_session.query(User).filter_by(username='admin').first()
+            )
 
         # 2. Inserir papel SUPER ADMIN
         if not db_session.query(Role).filter_by(name='SUPER ADMIN').first():
@@ -61,7 +63,9 @@ def seed_super_user():
         for transaction in existing_transactions:
             if (
                 not db_session.query(Authorization)
-                .filter_by(role_id=super_admin_role.id, transaction_id=transaction.id)
+                .filter_by(
+                    role_id=super_admin_role.id, transaction_id=transaction.id
+                )
                 .first()
             ):
                 authorization = Authorization(

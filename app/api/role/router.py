@@ -12,7 +12,10 @@ from app.database.session import get_session
 from app.models.role import Role
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 from app.utils.generic_controller import GenericController
 
 router = APIRouter()
@@ -23,17 +26,26 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.get(
-    '/{role_id}', status_code=HTTP_STATUS.HTTP_200_OK, response_model=RoleSchema
+    '/{role_id}',
+    status_code=HTTP_STATUS.HTTP_200_OK,
+    response_model=RoleSchema,
 )
-def get_role_by_id(role_id: int, db_session: Session, current_user: CurrentUser):
+def get_role_by_id(
+    role_id: int, db_session: Session, current_user: CurrentUser
+):
     validate_transaction_access(db_session, current_user, op.OP_1050005.value)
 
     return role_controller.get(db_session, role_id)
 
 
-@router.get('/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=RoleListSchema)
+@router.get(
+    '/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=RoleListSchema
+)
 def get_all_roles(
-    db_session: Session, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    db_session: Session,
+    current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
 ):
 
     validate_transaction_access(db_session, current_user, op.OP_1050003.value)
@@ -41,7 +53,9 @@ def get_all_roles(
     return {'roles': roles}
 
 
-@router.post('/', status_code=HTTP_STATUS.HTTP_201_CREATED, response_model=RoleSchema)
+@router.post(
+    '/', status_code=HTTP_STATUS.HTTP_201_CREATED, response_model=RoleSchema
+)
 def create_role(
     role: RoleDTOSchema,
     db_session: Session,
@@ -67,7 +81,9 @@ def create_role(
 
 
 @router.put(
-    '/{role_id}', status_code=HTTP_STATUS.HTTP_200_OK, response_model=RoleSchema
+    '/{role_id}',
+    status_code=HTTP_STATUS.HTTP_200_OK,
+    response_model=RoleSchema,
 )
 def update_role(
     role_id: int,

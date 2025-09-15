@@ -69,9 +69,13 @@ app.add_middleware(AuthorizationMiddleware)
 # ----------------------------------
 app.include_router(user_router, prefix='/users', tags=['Users'])
 app.include_router(auth_router, prefix='/auth', tags=['Auth'])
-app.include_router(transaction_router, prefix='/transaction', tags=['Transactions'])
+app.include_router(
+    transaction_router, prefix='/transaction', tags=['Transactions']
+)
 app.include_router(role_router, prefix='/role', tags=['Roles'])
-app.include_router(assignment_router, prefix='/assignment', tags=['Assignments'])
+app.include_router(
+    assignment_router, prefix='/assignment', tags=['Assignments']
+)
 app.include_router(
     authorization_router, prefix='/authorization', tags=['Authorizations']
 )

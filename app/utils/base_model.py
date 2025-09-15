@@ -21,9 +21,13 @@ class AbstractBaseModel(Base):
 
     __abstract__ = True
 
-    audit_user_ip: Mapped[str] = mapped_column(String(16), name='audit_user_ip')
+    audit_user_ip: Mapped[str] = mapped_column(
+        String(16), name='audit_user_ip'
+    )
     audit_created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), name='audit_created_at'
+        DateTime(timezone=True),
+        server_default=func.now(),
+        name='audit_created_at',
     )
     audit_updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

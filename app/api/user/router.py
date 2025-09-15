@@ -16,7 +16,10 @@ from app.api.user.schemas import UserList, UserPublic, UserSchema
 from app.database.session import get_session
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 
 router = APIRouter()
 user_controller = UserController()
@@ -26,11 +29,15 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post('/', status_code=201, response_model=UserPublic)
-async def create_new_user(user: UserSchema, request: Request, session: DbSession):
+async def create_new_user(
+    user: UserSchema, request: Request, session: DbSession
+):
 
     new_user: User = User(**user.model_dump())
     new_user.audit_user_ip = request.client.host
-    new_user.audit_user_login = 'adm'  # FIXME: Ajustar para pegar o login do usuário
+    new_user.audit_user_login = (
+        'adm'  # FIXME: Ajustar para pegar o login do usuário
+    )
 
     try:
         return user_controller.save(session, new_user)
@@ -46,7 +53,9 @@ async def create_new_user(user: UserSchema, request: Request, session: DbSession
     status_code=HTTP_STATUS.HTTP_200_OK,
     response_model=UserPublic,
 )
-def get_user_by_id(user_id: int, db_session: DbSession, current_user: CurrentUser):
+def get_user_by_id(
+    user_id: int, db_session: DbSession, current_user: CurrentUser
+):
     validate_transaction_access(db_session, current_user, op.OP_1040005.value)
 
     return user_controller.get(db_session, user_id)
@@ -54,7 +63,10 @@ def get_user_by_id(user_id: int, db_session: DbSession, current_user: CurrentUse
 
 @router.get('/', response_model=UserList)
 def read_users(
-    db_session: DbSession, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    db_session: DbSession,
+    current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
 ):
     validate_transaction_access(db_session, current_user, op.OP_1040003.value)
     users: list[User] = user_controller.get_all(db_session, skip, limit)
@@ -108,4 +120,6 @@ def get_user_transactions(
     current_user: CurrentUser,
 ):
     validate_transaction_access(db_session, current_user, op.OP_1040006.value)
-    return {'transactions': get_user_authorized_transactions(db_session, user_id)}
+    return {
+        'transactions': get_user_authorized_transactions(db_session, user_id)
+    }

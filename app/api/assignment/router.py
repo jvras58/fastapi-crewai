@@ -16,7 +16,10 @@ from app.database.session import get_session
 from app.models.assignment import Assignment
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 from app.utils.generic_controller import GenericController
 
 router = APIRouter()
@@ -40,10 +43,15 @@ def get_assignment_by_id(
 
 
 @router.get(
-    '/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=AssignmentListSchema
+    '/',
+    status_code=HTTP_STATUS.HTTP_200_OK,
+    response_model=AssignmentListSchema,
 )
 def get_all_assignments(
-    db_session: Session, current_user: CurrentUser, skip: int = 0, limit: int = 100
+    db_session: Session,
+    current_user: CurrentUser,
+    skip: int = 0,
+    limit: int = 100,
 ):
     validate_transaction_access(db_session, current_user, op.OP_1010003.value)
     assignments = controller.get_all(db_session, skip, limit)
@@ -51,7 +59,9 @@ def get_all_assignments(
 
 
 @router.post(
-    '/', status_code=HTTP_STATUS.HTTP_201_CREATED, response_model=AssignmentSchema
+    '/',
+    status_code=HTTP_STATUS.HTTP_201_CREATED,
+    response_model=AssignmentSchema,
 )
 def create_assignment(
     assignment: AssignmentDTOSchema,

@@ -3,7 +3,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.utils.base_model import AbstractBaseModel
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 
 
 class GenericController:
@@ -42,7 +45,9 @@ class GenericController:
         db_session.delete(instance)
         db_session.commit()
 
-    def save(self, db_session: Session, obj: AbstractBaseModel) -> AbstractBaseModel:
+    def save(
+        self, db_session: Session, obj: AbstractBaseModel
+    ) -> AbstractBaseModel:
         try:
             db_session.add(obj)
             db_session.commit()
@@ -52,7 +57,9 @@ class GenericController:
             raise IntegrityValidationException(exc.args[0]) from exc
         return obj
 
-    def update(self, db_session: Session, obj: AbstractBaseModel) -> AbstractBaseModel:
+    def update(
+        self, db_session: Session, obj: AbstractBaseModel
+    ) -> AbstractBaseModel:
         instance = self.get(db_session, obj.id)
         if not instance:
             raise ObjectNotFoundException(self.model.__name__, obj.id)

@@ -16,7 +16,6 @@ class UserController(GenericController):
 
     def save(self, db_session: Session, obj: User) -> AbstractBaseModel:
         obj.password = get_password_hash(obj.password)
-        print(obj.password)   # TODO: Remover
         return super().save(db_session, obj)
 
     def update(self, db_session: Session, obj: User) -> AbstractBaseModel:

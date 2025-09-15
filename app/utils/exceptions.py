@@ -95,4 +95,6 @@ class ObjectConflitException(Exception):
     """
 
     def __init__(self, obj_type: str, obj_id: str):
-        super().__init__(f'{obj_type} with ID [{obj_id}] conflict availability')
+        super().__init__(
+            f'{obj_type} with ID [{obj_id}] conflict availability'
+        )

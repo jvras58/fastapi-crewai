@@ -22,7 +22,9 @@ def validate_transaction_access(
     if not current_user:
         raise CredentialsValidationException()
 
-    trasactions = get_user_authorized_transactions(db_session, current_user.id, op_code)
+    trasactions = get_user_authorized_transactions(
+        db_session, current_user.id, op_code
+    )
     if not trasactions:
         raise IllegalAccessExcetion(current_user.id, op_code)
 
@@ -30,7 +32,9 @@ def validate_transaction_access(
         raise AmbiguousAuthorizationException(current_user.id, op_code)
 
     if trasactions[0].operation_code != op_code:
-        raise IllegalAccessExcetion(current_user.id, trasactions[0].operation_code)
+        raise IllegalAccessExcetion(
+            current_user.id, trasactions[0].operation_code
+        )
 
 
 def get_user_authorized_transactions(
@@ -38,7 +42,11 @@ def get_user_authorized_transactions(
 ) -> list[Transaction]:
 
     query: Select = (
-        select(Transaction).join(Authorization).join(Role).join(Assignment).join(User)
+        select(Transaction)
+        .join(Authorization)
+        .join(Role)
+        .join(Assignment)
+        .join(User)
     )
 
     criteria_and = []

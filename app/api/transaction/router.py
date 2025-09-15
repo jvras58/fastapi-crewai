@@ -16,7 +16,10 @@ from app.database.session import get_session
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
-from app.utils.exceptions import IntegrityValidationException, ObjectNotFoundException
+from app.utils.exceptions import (
+    IntegrityValidationException,
+    ObjectNotFoundException,
+)
 from app.utils.generic_controller import GenericController
 
 router = APIRouter()
@@ -27,7 +30,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post(
-    '/', status_code=HTTP_STATUS.HTTP_201_CREATED, response_model=TransactionSchema
+    '/',
+    status_code=HTTP_STATUS.HTTP_201_CREATED,
+    response_model=TransactionSchema,
 )
 async def create_transaction(
     transaction: TransactionDTOSchema,
@@ -42,7 +47,9 @@ async def create_transaction(
     new_transaction.audit_user_ip = request.client.host
 
     try:
-        new_transaction = transaction_controller.save(db_session, new_transaction)
+        new_transaction = transaction_controller.save(
+            db_session, new_transaction
+        )
     except IntegrityValidationException as ex:
         raise HTTPException(
             status_code=HTTP_STATUS.HTTP_400_BAD_REQUEST,
@@ -52,7 +59,9 @@ async def create_transaction(
 
 
 @router.get(
-    '/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=TransactionListSchema
+    '/',
+    status_code=HTTP_STATUS.HTTP_200_OK,
+    response_model=TransactionListSchema,
 )
 async def get_all_transactions(
     db_session: Session,
