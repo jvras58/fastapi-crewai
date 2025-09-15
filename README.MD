@@ -1,9 +1,9 @@
 <h1 align="center">
-  <a href="#">Projeto com FastAPI</a>
+  <a href="#">Projeto com FastAPI + CrewAI</a>
 </h1>
 
 <p align="center">
-  Bem-vindo! Este é um projeto para desenvolver uma API RESTful utilizando o framework FastAPI, com foco em autenticação, autorização e gerenciamento de permissões baseadas em papéis (RBAC). Ideal para quem deseja explorar boas práticas em desenvolvimento de APIs modernas com Python.
+   Esté projeto Utiliza o FastAPI para servir Agentes inteligentes utilizando o CrewAI
 </p>
 
 <p align="center">
@@ -38,11 +38,11 @@ O projeto é estruturado para ser modular, escalável e seguir boas práticas de
 
 Este projeto utiliza as seguintes tecnologias e ferramentas:
 
-- **Linguagem**: [Python 3.11](https://www.python.org/)
+- **Linguagem**: [Python 3.1](https://www.python.org/)
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Framework web para construção de APIs.
 - **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/) - Mapeamento objeto-relacional.
 - **Banco de Dados**: [SQLite](https://sqlite.org/) - Banco de dados leve e embarcado.
-- **Gerenciador de Dependências**: [Poetry](https://python-poetry.org/) - Gerenciamento de dependências e ambientes virtuais.
+- **Gerenciador de Dependências**: [Uv Astral](https://docs.astral.sh/uv/) - Gerenciamento de dependências e ambientes virtuais.
 - **Migrações**: [Alembic](https://alembic.sqlalchemy.org/) - Gerenciamento de migrações de banco de dados.
 - **Testes**: [pytest](https://pytest.org/) com [pytest-cov](https://pytest-cov.readthedocs.io/) para cobertura de testes.
 - **Linting e Formatação**: [Ruff](https://github.com/charliermarsh/ruff), [Blue](https://blue.readthedocs.io/), e [isort](https://pycqa.github.io/isort/) para manter o código limpo.
@@ -57,11 +57,11 @@ Para rodar ou contribuir com o projeto, você precisará das seguintes ferrament
 | Ferramenta                                         | Versão       | Instalação (Linux/macOS)                     |
 |----------------------------------------------------|--------------|----------------------------------------------|
 | [Python](https://www.python.org/)                  | 3.11.9       | `asdf install python 3.11.9` ou similar      |
-| [Poetry](https://python-poetry.org/)               | Latest       | `curl -sSL https://install.python-poetry.org | python3 -` |
+| [UV](https://docs.astral.sh/uv/)                   | Latest       | `curl -LsSf https://astral.sh/uv/install.sh | sh |
 | [Git](https://git-scm.com/)                        | Latest       | `sudo apt install git` (Linux) ou `brew install git` (macOS) |
 | [SQLite](https://sqlite.org/)                      | Latest       | Geralmente pré-instalado, ou `sudo apt install sqlite3` |
 
-**Nota**: Recomendamos o uso do `asdf` para gerenciar versões do Python. Consulte o arquivo `.tool-versions` para a versão exata do Python utilizada.
+**Nota**: Recomendamos o uso do `asdf` para gerenciar versões do Python. Consulte o arquivo `.python-version` para a versão exata do Python utilizada.
 
 ---
 
@@ -111,8 +111,8 @@ Siga os passos abaixo para configurar e executar o projeto localmente.
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/seu-usuario/FastAPI.git
-cd FastAPI
+git clone https://github.com/seu-usuario/fastapi-crewai
+cd fastapi-crewai
 ```
 
 ### 2. Configurar o Ambiente
@@ -135,10 +135,10 @@ echo "SUA_CHAVE_SECRETA_AQUI" > .secrets/SECURITY_API_SECRET_KEY
 ```
 
 ### 3. Instalar Dependências
-Ative o ambiente virtual e instale as dependências com o Poetry:
+Ative o ambiente virtual e instale as dependências com o UV:
 ```bash
-poetry shell
-poetry install
+uv sync
+uv install
 ```
 
 ### 4. Aplicar Migrações
@@ -160,8 +160,8 @@ task run
 
 A API estará disponível em:
 - **URL Local**: [http://localhost:8000](http://localhost:8000)
-- **Documentação Interativa**: [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI)
-- **Documentação Alternativa**: [http://localhost:8000/redoc](http://localhost:8000/redoc) (ReDoc)
+- **Documentação Interativa**: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs) (Swagger UI)
+- **Documentação Alternativa**: [http://localhost:8000/api/v1/redoc](http://localhost:8000/api/v1/redoc) (ReDoc)
 
 ### 6. Executar Testes
 Para rodar os testes automatizados e verificar a cobertura:
@@ -170,54 +170,6 @@ task test
 ```
 
 O relatório de cobertura será gerado em `htmlcov/index.html`.
-
----
-
-## :handshake: Como Contribuir
-
-Adoramos contribuições! Se você deseja ajudar a melhorar este projeto, siga estas etapas:
-
-### 1. Fork e Clone
-Faça um fork do repositório e clone-o localmente:
-```bash
-git clone https://github.com/seu-usuario/FastAPI.git
-cd FastAPI
-```
-
-### 2. Crie uma Branch
-Crie uma branch para sua feature ou correção:
-```bash
-git checkout -b minha-feature
-```
-
-### 3. Siga as Convenções
-- **Código**: Use o `ruff`, `blue` e `isort` para formatar o código (`task format`).
-- **Commits**: Utilize mensagens de commit claras e siga o padrão do [Commitizen](https://commitizen-tools.github.io/commitizen/) (`cz commit`).
-- **Testes**: Adicione testes para novas funcionalidades e garanta que `task test` passe.
-
-### 4. Envie sua Contribuição
-Faça o push da sua branch e crie um Pull Request:
-```bash
-git push origin minha-feature
-```
-
-No Pull Request, descreva claramente:
-- O que foi feito.
-- Por que a mudança é necessária.
-- Como testar a alteração.
-
-### Tarefas Disponíveis
-- Adicionar novos endpoints para funcionalidades específicas.
-- Melhorar a cobertura de testes.
-- Implementar validações adicionais nos esquemas Pydantic.
-- Adicionar suporte a outros bancos de dados (ex.: PostgreSQL).
-- Criar documentação adicional ou exemplos de uso.
-
-### Comandos Úteis
-- **Formatar código**: `task format`
-- **Verificar linting**: `task lint`
-- **Executar testes**: `task test`
-- **Gerar requirements.txt**: `task export_libs`
 
 ---
 
@@ -231,4 +183,3 @@ Este projeto está licenciado sob a [MIT License](LICENSE). Veja o arquivo `LICE
 
 Se tiver dúvidas ou sugestões, entre em contato:
 - **Autores**: jvras <jvras58@gmail.com>
-- **Issues**: [GitHub Issues](https://github.com/jvras58/FastAPI/issues)
