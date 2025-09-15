@@ -18,7 +18,7 @@ from app.utils.security import (
     verify_password,
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='auth/token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 Session = Annotated[Session, Depends(get_session)]
 OAuth2Token = Annotated[OAuth2PasswordBearer, Depends(oauth2_scheme)]

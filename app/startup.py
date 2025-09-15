@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
 
 from app.api.assignment.router import router as assignment_router
 from app.api.authentication.router import router as auth_router
@@ -89,37 +88,6 @@ app.include_router(
     data_processing_router, prefix="/data-processing", tags=["Data Processing"]
 )
 # ----------------------------------
-
-# FIXME: Ajustar o auth/token para refletir a rota correta e parar de tentar ir para v1
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title=app.title,
-        version=app.version,
-        description=app.description,
-        routes=app.routes,
-    )
-    openapi_schema["info"]["x-logo"] = {
-        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
-    }
-    if "components" not in openapi_schema:
-        openapi_schema["components"] = {}
-    if "securitySchemes" not in openapi_schema["components"]:
-        openapi_schema["components"]["securitySchemes"] = {}
-    openapi_schema["components"]["securitySchemes"].update(
-        {
-            "OAuth2PasswordBearer": {
-                "type": "oauth2",
-                "flows": {"password": {"tokenUrl": "/auth/token", "scopes": {}}},
-            }
-        }
-    )
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-
-app.openapi = custom_openapi
 
 
 @app.get('/')
