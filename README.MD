@@ -38,7 +38,7 @@ O projeto é estruturado para ser modular, escalável e seguir boas práticas de
 
 Este projeto utiliza as seguintes tecnologias e ferramentas:
 
-- **Linguagem**: [Python 3.1](https://www.python.org/)
+- **Linguagem**: [Python 3.12](https://www.python.org/)
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Framework web para construção de APIs.
 - **ORM**: [SQLAlchemy](https://www.sqlalchemy.org/) - Mapeamento objeto-relacional.
 - **Banco de Dados**: [SQLite](https://sqlite.org/) - Banco de dados leve e embarcado.
@@ -56,7 +56,7 @@ Para rodar ou contribuir com o projeto, você precisará das seguintes ferrament
 
 | Ferramenta                                         | Versão       | Instalação (Linux/macOS)                     |
 |----------------------------------------------------|--------------|----------------------------------------------|
-| [Python](https://www.python.org/)                  | 3.11.9       | `asdf install python 3.11.9` ou similar      |
+| [Python](https://www.python.org/)                  | 3.12       | `asdf install python 3.12` ou similar      |
 | [UV](https://docs.astral.sh/uv/)                   | Latest       | `curl -LsSf https://astral.sh/uv/install.sh | sh |
 | [Git](https://git-scm.com/)                        | Latest       | `sudo apt install git` (Linux) ou `brew install git` (macOS) |
 | [SQLite](https://sqlite.org/)                      | Latest       | Geralmente pré-instalado, ou `sudo apt install sqlite3` |
@@ -89,7 +89,7 @@ FastAPI/
 ├── .secrets/                   # Arquivos sensíveis (ex.: SECURITY_API_SECRET_KEY)
 ├── .env-semple                 # Modelo para arquivo de configuração .env
 ├── alembic.ini                 # Configuração do Alembic
-├── poetry.lock                 # Lockfile do Poetry com dependências fixas
+├── uv.lock                    # Lockfile do uv com dependências fixas
 ├── pyproject.toml              # Configuração do projeto e dependências
 ├── .gitignore                  # Arquivos e pastas ignorados pelo Git
 ├── .tool-versions              # Versões das ferramentas utilizadas
@@ -115,7 +115,37 @@ git clone https://github.com/seu-usuario/fastapi-crewai
 cd fastapi-crewai
 ```
 
-### 2. Configurar o Ambiente
+## 2.1 Montando o ambiente
+
+Este repositório esta organizando em um devcontainer.
+E para instacia-lo no VSCODE é recomendado as seguintes configurações:
+
+#### Extenções recomendadas
+
+- Name: Remote Development
+- Id: ms-vscode-remote.vscode-remote-extensionpack
+- Description: An extension pack that lets you open any folder in a container, on a remote machine, or in WSL and take advantage of VS Code's full feature set.
+- Version: 0.25.0
+- Publisher: Microsoft
+- VSCode Marketplace Link: https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack
+
+#### Docker Engine
+
+É obrigatório ter o Docker Engine já instalado e cunfigurado. Para mais informações de como instalar o Docker Engine em seu SO, ver em:
+
+- Instruções para instalação do Docker Engine: [Ver o link](https://docs.docker.com/engine/install/)
+
+#### Procedimento para instanciar o projeto no VSCODE
+1. Com o pack de extenções instalado,
+1. Realize o clone/fork deste repositório,
+1. Abra o diretorio deste repositorio no VSCODE como um projeto,
+1. Use o Comando _Dev Containers: Reopen in Container_ da paleta de comandos do VSCODE. _(F1, Ctrl+Shift+P)_.
+
+Depois da compilação do container o VSCode abrirá o repositório em um ambiente encapsulado e executando diretamente de dentro do container como configurado nas definições do **/.devconainer**.
+
+---
+
+### 2.2 Configurar o Ambiente
 Crie o arquivo `.env` baseado no modelo fornecido:
 ```bash
 cp .env-semple .env
