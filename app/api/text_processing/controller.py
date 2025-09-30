@@ -25,7 +25,7 @@ class TextProcessingController(GenericController):
             backstory='Sou um especialista em análise textual e processamento de linguagem natural. '
                      'Posso corrigir, resumir, melhorar e transformar textos de acordo com diferentes necessidades.',
             llm=llm,
-            verbose=True,
+            verbose=False,  # TODO: verbose pode ser True para depuração
         )
         task = Task(
             description=f'Analise e melhore o seguinte texto, considerando gramática, '
@@ -33,7 +33,7 @@ class TextProcessingController(GenericController):
             agent=text_processor_agent,
             expected_output='Texto processado e melhorado com justificativa das alterações realizadas.',
         )
-        crew = Crew(agents=[text_processor_agent], tasks=[task], verbose=False)  # verbose pode ser True para depuração
+        crew = Crew(agents=[text_processor_agent], tasks=[task], verbose=False)  # TODO: verbose pode ser True para depuração
         result = crew.kickoff()
 
         processed = ProcessedText(
