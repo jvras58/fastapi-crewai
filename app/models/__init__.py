@@ -11,4 +11,4 @@ from app.models.authorization import Authorization  # noqa F401
 from app.models.role import Role  # noqa F401
 from app.models.transaction import Transaction  # noqa F401
 from app.models.user import User  # noqa F401
-from app.models.processed_data import ProcessedData  # noqa F401
+from app.models.processed_text import ProcessedText  # noqa F401

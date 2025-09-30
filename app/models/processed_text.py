@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class ProcessedData(AbstractBaseModel):
-    """Modelo SQLAlchemy para dados processados."""
+class ProcessedText(AbstractBaseModel):
+    """Modelo SQLAlchemy para texto processado por IA."""
 
     __tablename__ = 'processed_data'
 
@@ -24,5 +24,5 @@ class ProcessedData(AbstractBaseModel):
     )
 
     user: Mapped['User'] = relationship(
-        back_populates='processed_data_entries', lazy='subquery'
+        back_populates='processed_text_entries', lazy='subquery'
     )
