@@ -1,3 +1,4 @@
+"""Authentication controller module."""
 from typing import Annotated
 
 from fastapi import Depends
@@ -20,15 +21,14 @@ from app.utils.security import (
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-Session = Annotated[Session, Depends(get_session)]
-OAuth2Token = Annotated[OAuth2PasswordBearer, Depends(oauth2_scheme)]
+SessionDep = Annotated[Session, Depends(get_session)]
+OAuth2Token = Annotated[str, Depends(oauth2_scheme)]
 
 user_controller = UserController()
 
 
-def execute_user_login(
-    db_session: Session, username: str, password: str
-) -> dict:
+def execute_user_login(db_session: SessionDep, username: str, password: str) -> dict:
+    """Authenticate user and return JWT token."""
     db_user: User = user_controller.get_user_by_username(db_session, username)
 
     if not db_user:
@@ -42,8 +42,8 @@ def execute_user_login(
     return {'access_token': token, 'token_type': 'bearer'}
 
 
-async def get_current_user(db_session: Session, token: OAuth2Token) -> User:
-
+async def get_current_user(db_session: SessionDep, token: OAuth2Token) -> User:
+    """Get current user from JWT token."""
     token_data = TokenData()
     try:
         username = extract_username(token)
