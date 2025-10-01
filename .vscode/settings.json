@@ -27,7 +27,8 @@
         "**/.nox": true,
         "**/.pytest_cache": true,
         "**/.ruff_cache": true,
-        "**/.tox": true
+        "**/.tox": true,
+        "**/FastAPI_CrewAI.egg-info": true,
     },
     "python.testing.pytestArgs": [
         "tests"
