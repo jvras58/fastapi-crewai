@@ -1,3 +1,4 @@
+"""Router for text processing with AI."""
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -13,6 +14,7 @@ from app.api.text_processing.schemas import (
 from app.api.transaction.enum_operation_code import EnumOperationCode as op
 from app.database.session import get_session
 from app.models.user import User
+from app.utils.client_ip import get_client_ip
 
 router = APIRouter()
 text_processing_controller = TextProcessingController()
@@ -34,14 +36,21 @@ def process_text(
     current_user: CurrentUser,
     http_request: Request,
 ):
+    """Processes and enhances text using AI, saving the result."""
     validate_transaction_access(db_session, current_user, op.OP_2000001.value)
     try:
         result = text_processing_controller.process_text_and_persist(
             db_session,
             request.input_text,
             current_user,
-            http_request.client.host,
+            get_client_ip(http_request),
         )
+        if result.processed_result is None:
+            raise HTTPException(
+                status_code=500,
+                detail="Falha no processamento do texto - resultado vazio",
+            )
+
         return TextProcessResponse(processed_result=result.processed_result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
