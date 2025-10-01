@@ -27,14 +27,14 @@ class AbstractBaseModel(Base):
     )
     audit_created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
-        name="audit_created_at",
+        server_default=text('CURRENT_TIMESTAMP'),
+        name='audit_created_at',
     )
     audit_updated_on: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
-        onupdate=text("CURRENT_TIMESTAMP"),
-        name="audit_updated_on",
+        server_default=text('CURRENT_TIMESTAMP'),
+        onupdate=text('CURRENT_TIMESTAMP'),
+        name='audit_updated_on',
     )
     audit_user_login: Mapped[str] = mapped_column(name='audit_user_login')
 

@@ -19,7 +19,7 @@ from app.utils.security import (
     verify_password,
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token')
 
 SessionDep = Annotated[Session, Depends(get_session)]
 OAuth2Token = Annotated[str, Depends(oauth2_scheme)]
@@ -27,7 +27,9 @@ OAuth2Token = Annotated[str, Depends(oauth2_scheme)]
 user_controller = UserController()
 
 
-def execute_user_login(db_session: SessionDep, username: str, password: str) -> dict:
+def execute_user_login(
+    db_session: SessionDep, username: str, password: str
+) -> dict:
     """Authenticate user and return JWT token."""
     db_user = user_controller.get_user_by_username(db_session, username)
 

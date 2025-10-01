@@ -34,7 +34,9 @@ def validate_transaction_access(
         raise AmbiguousAuthorizationException(current_user.id, op_code)
 
     if transactions[0].operation_code != op_code:
-        raise IllegalAccessException(current_user.id, transactions[0].operation_code)
+        raise IllegalAccessException(
+            current_user.id, transactions[0].operation_code
+        )
 
 
 def get_user_authorized_transactions(

@@ -22,4 +22,3 @@ def get_client_ip(request: Request) -> str:
         return remote_addr
 
     return '127.0.0.1'  # Fallback to localhost
-

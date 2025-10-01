@@ -10,10 +10,13 @@ from app.utils.security import get_password_hash
 
 class UserController(GenericController):
     """Controller for user-related operations."""
+
     def __init__(self) -> None:
         super().__init__(User)
 
-    def get_user_by_username(self, db_session: Session, username: str) -> User | None:
+    def get_user_by_username(
+        self, db_session: Session, username: str
+    ) -> User | None:
         """Get a user by their username."""
         return db_session.scalar(select(User).where(User.username == username))
 

@@ -15,9 +15,11 @@ class AssignmentDTOSchema(BaseAuditDTOSchema):
 
 class AssignmentSchema(AssignmentDTOSchema, BaseAuditModelSchema):
     """Schema representing an Assignment with audit fields."""
+
     id: int
 
 
 class AssignmentListSchema(BaseModel):
     """Schema representing a list of Assignments."""
+
     assignments: list[AssignmentSchema]

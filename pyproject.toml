@@ -34,7 +34,7 @@ dev = [
     "ruff>=0.13.0",
     "taskipy>=1.14.1",
 ]
-
+# uv run (commands) sample = uv run pytest -s -x --cov=app -vv
 [tool.taskipy.tasks]
 lint = "ruff check . && blue --check . --diff"
 format = "blue . && isort ."
@@ -56,7 +56,16 @@ extend_skip = ["migrations"]
 [tool.uv]
 package = true
 
+[tool.pylsp-mypy]
+exclude = ["tests/"]
+
+[tool.pyright]
+exclude = ["tests/"]
+
 [tool.ruff]
 line-length = 88
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 exclude = [".venv", "migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM"]

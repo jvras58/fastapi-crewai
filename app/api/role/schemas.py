@@ -15,9 +15,11 @@ class RoleDTOSchema(BaseAuditDTOSchema):
 
 class RoleSchema(RoleDTOSchema, BaseAuditModelSchema):
     """Represents a Role for the system."""
+
     id: int
 
 
 class RoleListSchema(BaseModel):
     """Represents a list of Roles for the system."""
+
     roles: list[RoleSchema]

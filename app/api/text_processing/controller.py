@@ -1,3 +1,4 @@
+"""Controller for text processing using LLMs and CrewAI."""
 from crewai import Agent, Crew, Task
 from sqlalchemy.orm import Session
 
@@ -8,6 +9,8 @@ from app.utils.llm import get_llm
 
 
 class TextProcessingController(GenericController):
+    """Controller for text processing using LLMs and CrewAI."""
+
     def __init__(self):
         super().__init__(ProcessedText)
 
@@ -18,22 +21,31 @@ class TextProcessingController(GenericController):
         user: User,
         user_ip: str,
     ) -> ProcessedText:
+        """Process text using LLM and persist the result."""
         llm = get_llm()
         text_processor_agent = Agent(
             role='Especialista em Processamento de Texto',
             goal='Analisar e melhorar texto usando técnicas de IA',
-            backstory='Sou um especialista em análise textual e processamento de linguagem natural. '
-                     'Posso corrigir, resumir, melhorar e transformar textos de acordo com diferentes necessidades.',
+            backstory=(
+                'Sou um especialista em análise textual e processamento '
+                'de linguagem natural. Posso corrigir, resumir, melhorar '
+                'e transformar textos de acordo com diferentes necessidades.'
+            ),
             llm=llm,
             verbose=False,  # TODO: verbose pode ser True para depuração
         )
         task = Task(
             description=f'Analise e melhore o seguinte texto, considerando gramática, '
-                       f'clareza e estrutura: {input_text}',
+            f'clareza e estrutura: {input_text}',
             agent=text_processor_agent,
-            expected_output='Texto processado e melhorado com justificativa das alterações realizadas.',
+            expected_output=(
+                'Texto processado e melhorado com justificativa '
+                'das alterações realizadas.'
+            ),
         )
-        crew = Crew(agents=[text_processor_agent], tasks=[task], verbose=False)  # TODO: verbose pode ser True para depuração
+        crew = Crew(
+            agents=[text_processor_agent], tasks=[task], verbose=False
+        )  # TODO: verbose pode ser True para depuração
         result = crew.kickoff()
 
         processed = ProcessedText(

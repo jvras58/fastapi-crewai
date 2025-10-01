@@ -16,7 +16,9 @@ OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
 @router.post('/token', response_model=AccessToken)
-def login_for_access_token(form_data: OAuth2Form, db_session: SessionDep) -> dict:
+def login_for_access_token(
+    form_data: OAuth2Form, db_session: SessionDep
+) -> dict:
     """Endpoint to obtain JWT token."""
     try:
         return execute_user_login(

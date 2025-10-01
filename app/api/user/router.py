@@ -37,7 +37,9 @@ async def create_new_user(
     """Create a new user."""
     new_user: User = User(**user.model_dump())
     new_user.audit_user_ip = get_client_ip(request)
-    new_user.audit_user_login = "adm"  # FIXME: Ajustar para pegar o USERNAME do usuário
+    new_user.audit_user_login = (
+        'adm'  # FIXME: Ajustar para pegar o USERNAME do usuário
+    )
 
     try:
         return user_controller.save(session, new_user)
@@ -92,7 +94,7 @@ def update_existing_user(
 
         new_user.audit_user_ip = get_client_ip(request)
         new_user.audit_user_login = (
-            "adm"  # FIXME: Ajustar para pegar o login do usuário
+            'adm'  # FIXME: Ajustar para pegar o login do usuário
         )
 
         return user_controller.update(db_session, new_user)

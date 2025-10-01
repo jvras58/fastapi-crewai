@@ -32,7 +32,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
     status_code=HTTP_STATUS.HTTP_200_OK,
     response_model=RoleSchema,
 )
-def get_role_by_id(role_id: int, db_session: SessionDep, current_user: CurrentUser):
+def get_role_by_id(
+    role_id: int, db_session: SessionDep, current_user: CurrentUser
+):
     """Get role by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1050005.value)
     return role_controller.get(db_session, role_id)
