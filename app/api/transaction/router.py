@@ -1,3 +1,4 @@
+"""Router for transaction-related operations."""
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -16,6 +17,7 @@ from app.database.session import get_session
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
+from app.utils.client_ip import get_client_ip
 from app.utils.exceptions import (
     IntegrityValidationException,
     ObjectNotFoundException,
@@ -25,7 +27,7 @@ from app.utils.generic_controller import GenericController
 router = APIRouter()
 transaction_controller = GenericController(Transaction)
 
-Session = Annotated[Session, Depends(get_session)]
+SessionDep = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
@@ -38,13 +40,14 @@ async def create_transaction(
     transaction: TransactionDTOSchema,
     request: Request,
     current_user: CurrentUser,
-    db_session: Session,
+    db_session: SessionDep,
 ):
+    """Create a new transaction."""
     validate_transaction_access(db_session, current_user, op.OP_1030001.value)
     new_transaction: Transaction = Transaction(**transaction.model_dump())
 
     new_transaction.audit_user_login = current_user.username
-    new_transaction.audit_user_ip = request.client.host
+    new_transaction.audit_user_ip = get_client_ip(request)
 
     try:
         new_transaction = transaction_controller.save(
@@ -64,12 +67,13 @@ async def create_transaction(
     response_model=TransactionListSchema,
 )
 async def get_all_transactions(
-    db_session: Session,
+    db_session: SessionDep,
     current_user: CurrentUser,
     skip: int = 0,
     limit: int = 100,
-    op_code: str = None,
+    op_code: str | None = None,
 ):
+    """Get all transactions with optional filtering by operation code."""
     validate_transaction_access(db_session, current_user, op.OP_1030003.value)
     criterias = {}
     if op_code:
@@ -87,8 +91,9 @@ async def get_all_transactions(
     response_model=TransactionSchema,
 )
 def get_transaction_by_id(
-    transaction_id: int, db_session: Session, current_user: CurrentUser
+    transaction_id: int, db_session: SessionDep, current_user: CurrentUser
 ):
+    """Get transaction by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1030005.value)
 
     return transaction_controller.get(db_session, transaction_id)
@@ -100,19 +105,19 @@ def get_transaction_by_id(
     response_model=TransactionSchema,
 )
 async def update_transaction(
-    db_session: Session,
+    db_session: SessionDep,
     transaction_id: int,
     transaction: TransactionDTOSchema,
     request: Request,
     current_user: CurrentUser,
 ):
-
+    """Update an existing transaction."""
     validate_transaction_access(db_session, current_user, op.OP_1030002.value)
 
     new_transaction: Transaction = Transaction(**transaction.model_dump())
     new_transaction.id = transaction_id
     new_transaction.audit_user_login = current_user.username
-    new_transaction.audit_user_ip = request.client.host
+    new_transaction.audit_user_ip = get_client_ip(request)
 
     try:
         return transaction_controller.update(db_session, new_transaction)
@@ -125,10 +130,10 @@ async def update_transaction(
 @router.delete('/{transaction_id}', response_model=SimpleMessageSchema)
 def delete_existing_transaction(
     transaction_id: int,
-    db_session: Session,
+    db_session: SessionDep,
     current_user: CurrentUser,
 ):
-
+    """Delete a transaction by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1030004.value)
 
     try:

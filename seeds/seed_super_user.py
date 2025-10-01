@@ -1,3 +1,4 @@
+"""Seed script to create a super user with all permissions."""
 from app.database.session import get_session
 from app.models.assignment import Assignment
 from app.models.authorization import Authorization
@@ -8,9 +9,11 @@ from app.utils.security import get_password_hash
 
 
 def seed_super_user():
+    """Seed the database with a super user, role, and all authorizations."""
     with next(get_session()) as db_session:
         # 1. Inserir usuário administrador
-        if not db_session.query(User).filter_by(username='admin').first():
+        admin_user = db_session.query(User).filter_by(username="admin").first()
+        if not admin_user:
             admin_user = User(
                 username='admin',
                 display_name='Administrador',
@@ -22,13 +25,10 @@ def seed_super_user():
             db_session.add(admin_user)
             db_session.commit()
             db_session.refresh(admin_user)
-        else:
-            admin_user = (
-                db_session.query(User).filter_by(username='admin').first()
-            )
 
         # 2. Inserir papel SUPER ADMIN
-        if not db_session.query(Role).filter_by(name='SUPER ADMIN').first():
+        super_admin_role = db_session.query(Role).filter_by(name="SUPER ADMIN").first()
+        if not super_admin_role:
             super_admin_role = Role(
                 name='SUPER ADMIN',
                 description='Role for system Administrator',
@@ -38,9 +38,11 @@ def seed_super_user():
             db_session.add(super_admin_role)
             db_session.commit()
             db_session.refresh(super_admin_role)
-        else:
-            super_admin_role = (
-                db_session.query(Role).filter_by(name='SUPER ADMIN').first()
+
+        # Verificar se admin_user e super_admin_role são válidos
+        if not admin_user or not super_admin_role:
+            raise RuntimeError(
+                "Falha ao criar ou recuperar usuário administrador ou papel SUPER ADMIN"
             )
 
         # 3. Inserir atribuição (assignment) vinculando usuário ao papel

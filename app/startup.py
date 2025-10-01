@@ -1,3 +1,4 @@
+"""Application startup and configuration."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,8 +6,8 @@ from app.api.assignment.router import router as assignment_router
 from app.api.authentication.router import router as auth_router
 from app.api.authorization.middleware import AuthorizationMiddleware
 from app.api.authorization.router import router as authorization_router
-from app.api.text_processing.router import router as text_processing_router
 from app.api.role.router import router as role_router
+from app.api.text_processing.router import router as text_processing_router
 from app.api.transaction.router import router as transaction_router
 from app.api.user.router import router as user_router
 
@@ -92,4 +93,5 @@ app.include_router(
 
 @app.get('/')
 def read_root():
-    return {'message': 'Wellcome to API!'}
+    """Root endpoint to verify that the API is running."""
+    return {"message": "Welcome to API!"}

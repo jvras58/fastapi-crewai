@@ -1,8 +1,10 @@
+"""Role management API routes."""
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi import status as HTTP_STATUS
 from sqlalchemy.orm import Session
+from utils.client_ip import get_client_ip
 
 from app.api.authentication.controller import get_current_user
 from app.api.authorization.controller import validate_transaction_access
@@ -21,7 +23,7 @@ from app.utils.generic_controller import GenericController
 router = APIRouter()
 role_controller = GenericController(Role)
 
-Session = Annotated[Session, Depends(get_session)]
+SessionDep = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
@@ -30,11 +32,9 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
     status_code=HTTP_STATUS.HTTP_200_OK,
     response_model=RoleSchema,
 )
-def get_role_by_id(
-    role_id: int, db_session: Session, current_user: CurrentUser
-):
+def get_role_by_id(role_id: int, db_session: SessionDep, current_user: CurrentUser):
+    """Get role by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1050005.value)
-
     return role_controller.get(db_session, role_id)
 
 
@@ -42,12 +42,12 @@ def get_role_by_id(
     '/', status_code=HTTP_STATUS.HTTP_200_OK, response_model=RoleListSchema
 )
 def get_all_roles(
-    db_session: Session,
+    db_session: SessionDep,
     current_user: CurrentUser,
     skip: int = 0,
     limit: int = 100,
 ):
-
+    """Get all roles with pagination."""
     validate_transaction_access(db_session, current_user, op.OP_1050003.value)
     roles = role_controller.get_all(db_session, skip, limit)
     return {'roles': roles}
@@ -58,15 +58,15 @@ def get_all_roles(
 )
 def create_role(
     role: RoleDTOSchema,
-    db_session: Session,
+    db_session: SessionDep,
     current_user: CurrentUser,
     request: Request,
 ):
-
+    """Create a new role."""
     validate_transaction_access(db_session, current_user, op.OP_1050001.value)
     new_role = Role(**role.model_dump())
 
-    new_role.audit_user_ip = request.client.host
+    new_role.audit_user_ip = get_client_ip(request)
     new_role.audit_user_login = current_user.username
 
     try:
@@ -88,15 +88,16 @@ def create_role(
 def update_role(
     role_id: int,
     role: RoleDTOSchema,
-    db_session: Session,
+    db_session: SessionDep,
     request: Request,
     current_user: CurrentUser,
 ):
+    """Update an existing role."""
     validate_transaction_access(db_session, current_user, op.OP_1050002.value)
 
     new_role: Role = Role(**role.model_dump())
     new_role.id = role_id
-    new_role.audit_user_ip = request.client.host
+    new_role.audit_user_ip = get_client_ip(request)
     new_role.audit_user_login = current_user.username
 
     try:
@@ -114,10 +115,10 @@ def update_role(
 )
 def delete_role(
     role_id: int,
-    db_session: Session,
+    db_session: SessionDep,
     current_user: CurrentUser,
 ):
-
+    """Delete a role by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1050004.value)
 
     try:

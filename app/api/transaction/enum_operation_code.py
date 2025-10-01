@@ -1,7 +1,9 @@
+"""Enumeration of operation codes for transactions in the system."""
 from enum import Enum
 
 
 class EnumOperationCode(Enum):
+    """Enumeration of operation codes for transactions in the system."""
     # --------------------- Assignment ---------------------
     OP_1010001 = '1010001'   # Assignment - Create
     OP_1010002 = '1010002'   # Assignment - Update

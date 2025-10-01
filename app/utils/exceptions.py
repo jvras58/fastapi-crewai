@@ -59,7 +59,7 @@ class IntegrityValidationException(Exception):
         super().__init__(exc_msg)
 
 
-class IllegalAccessExcetion(HTTPException):
+class IllegalAccessException(HTTPException):
     """
     Representa um erro de acesso ilegal.
     """

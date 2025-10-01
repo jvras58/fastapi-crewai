@@ -1,3 +1,4 @@
+"""User-related API routes and operations."""
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -16,6 +17,7 @@ from app.api.user.schemas import UserList, UserPublic, UserSchema
 from app.database.session import get_session
 from app.models.user import User
 from app.utils.base_schemas import SimpleMessageSchema
+from app.utils.client_ip import get_client_ip
 from app.utils.exceptions import (
     IntegrityValidationException,
     ObjectNotFoundException,
@@ -32,12 +34,10 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 async def create_new_user(
     user: UserSchema, request: Request, session: DbSession
 ):
-
+    """Create a new user."""
     new_user: User = User(**user.model_dump())
-    new_user.audit_user_ip = request.client.host
-    new_user.audit_user_login = (
-        'adm'  # FIXME: Ajustar para pegar o login do usuário
-    )
+    new_user.audit_user_ip = get_client_ip(request)
+    new_user.audit_user_login = "adm"  # FIXME: Ajustar para pegar o USERNAME do usuário
 
     try:
         return user_controller.save(session, new_user)
@@ -56,6 +56,7 @@ async def create_new_user(
 def get_user_by_id(
     user_id: int, db_session: DbSession, current_user: CurrentUser
 ):
+    """Get user by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1040005.value)
 
     return user_controller.get(db_session, user_id)
@@ -68,6 +69,7 @@ def read_users(
     skip: int = 0,
     limit: int = 100,
 ):
+    """Retrieve all users with pagination."""
     validate_transaction_access(db_session, current_user, op.OP_1040003.value)
     users: list[User] = user_controller.get_all(db_session, skip, limit)
     return {'users': users}
@@ -81,15 +83,16 @@ def update_existing_user(
     db_session: DbSession,
     current_user: CurrentUser,
 ):
+    """Update an existing user."""
     validate_transaction_access(db_session, current_user, op.OP_1040002.value)
 
     try:
         new_user: User = User(**user.model_dump())
         new_user.id = user_id
 
-        new_user.audit_user_ip = request.client.host
+        new_user.audit_user_ip = get_client_ip(request)
         new_user.audit_user_login = (
-            'adm'  # FIXME: Ajustar para pegar o login do usuário
+            "adm"  # FIXME: Ajustar para pegar o login do usuário
         )
 
         return user_controller.update(db_session, new_user)
@@ -103,6 +106,7 @@ def delete_existing_user(
     db_session: DbSession,
     current_user: CurrentUser,
 ):
+    """Delete a user by ID."""
     validate_transaction_access(db_session, current_user, op.OP_1040004.value)
 
     try:
@@ -119,6 +123,7 @@ def get_user_transactions(
     db_session: DbSession,
     current_user: CurrentUser,
 ):
+    """Get transactions authorized for a specific user."""
     validate_transaction_access(db_session, current_user, op.OP_1040006.value)
     return {
         'transactions': get_user_authorized_transactions(db_session, user_id)

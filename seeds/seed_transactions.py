@@ -1,9 +1,11 @@
+"""Seed Transactions Module."""
 from app.api.transaction.enum_operation_code import EnumOperationCode
 from app.database.session import get_session
 from app.models.transaction import Transaction
 
 
 def seed_transactions():
+    """Seed initial transactions into the database."""
     with next(get_session()) as db_session:
         # Lista de transações a serem inseridas
         transactions_data = [

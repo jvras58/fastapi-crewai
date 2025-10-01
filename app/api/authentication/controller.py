@@ -29,7 +29,7 @@ user_controller = UserController()
 
 def execute_user_login(db_session: SessionDep, username: str, password: str) -> dict:
     """Authenticate user and return JWT token."""
-    db_user: User = user_controller.get_user_by_username(db_session, username)
+    db_user = user_controller.get_user_by_username(db_session, username)
 
     if not db_user:
         raise IncorrectCredentialException()
