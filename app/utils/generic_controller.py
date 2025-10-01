@@ -11,7 +11,7 @@ from app.utils.exceptions import (
     ObjectNotFoundException,
 )
 
-T = TypeVar("T", bound=AbstractBaseModel)
+T = TypeVar('T', bound=AbstractBaseModel)
 
 
 class GenericController(Generic[T]):
@@ -68,9 +68,11 @@ class GenericController(Generic[T]):
 
     def update(self, db_session: Session, obj: T) -> T:
         """Update an existing object in the database."""
-        obj_id = getattr(obj, "id", None)
+        obj_id = getattr(obj, 'id', None)
         if obj_id is None:
-            raise ValueError("Object must have an 'id' attribute for update operations")
+            raise ValueError(
+                "Object must have an 'id' attribute for update operations"
+            )
 
         instance = self.get(db_session, obj_id)
         if not instance:
