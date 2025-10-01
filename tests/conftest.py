@@ -107,7 +107,7 @@ def user(session):
     session.commit()
     session.refresh(user)
 
-    user.clear_password = clr_password
+    user.clear_password = clr_password  # type: ignore[attr-defined]
     return user
 
 
@@ -135,7 +135,7 @@ def other_user(session):
     session.commit()
     session.refresh(user)
 
-    user.clear_password = clr_password
+    user.clear_password = clr_password  # type: ignore[attr-defined]
     return user
 
 
