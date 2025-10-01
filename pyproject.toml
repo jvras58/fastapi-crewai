@@ -64,8 +64,8 @@ exclude = ["tests/"]
 
 [tool.ruff]
 line-length = 88
-select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 exclude = [".venv", "migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
+ignore = ["UP046"]  # Ignore Generic subclass rule for compatibility with blue formatter

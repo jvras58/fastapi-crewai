@@ -1,4 +1,6 @@
 """Generic controller for CRUD operations."""
+from typing import Generic, TypeVar
+
 from sqlalchemy import String, and_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -9,8 +11,10 @@ from app.utils.exceptions import (
     ObjectNotFoundException,
 )
 
+T = TypeVar("T", bound=AbstractBaseModel)
 
-class GenericController[T: AbstractBaseModel]:
+
+class GenericController(Generic[T]):
     """Generic controller for CRUD operations."""
 
     def __init__(self, model: type[T]) -> None:

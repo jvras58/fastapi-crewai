@@ -48,7 +48,7 @@ def process_text(
         if result.processed_result is None:
             raise HTTPException(
                 status_code=500,
-                detail="Falha no processamento do texto - resultado vazio",
+                detail='Falha no processamento do texto - resultado vazio',
             )
 
         return TextProcessResponse(processed_result=result.processed_result)
