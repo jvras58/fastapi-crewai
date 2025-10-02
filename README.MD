@@ -111,7 +111,7 @@ Siga os passos abaixo para configurar e executar o projeto localmente.
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/seu-usuario/fastapi-crewai
+git clone https://github.com/jvras58/fastapi-crewai
 cd fastapi-crewai
 ```
 
@@ -170,6 +170,7 @@ Ative o ambiente virtual e instale as dependências com o UV:
 uv sync
 uv install
 ```
+> Entre no ambiente virtual: source activate_env.sh
 
 ### 4. Aplicar Migrações
 Execute as migrações para criar as tabelas no banco de dados:
