@@ -69,7 +69,3 @@ exclude = [".venv", "migrations"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 ignore = ["UP046"]  # Ignore Generic subclass rule for compatibility with blue formatter
-
-[tool.ruff.lint.per-file-ignores]
-"migrations/**" = ["E", "F", "I", "W", "UP", "B", "SIM"]
-"**/__pycache__/**" = ["E", "F", "I", "W", "UP", "B", "SIM"]
