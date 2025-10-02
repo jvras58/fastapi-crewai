@@ -1,3 +1,4 @@
+"""Model for Transaction (Transação)."""
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Index, String
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
 
 class Transaction(AbstractBaseModel):
     """
-    Represetna a tabela de Trasações do sistema.
+    Represents the Transaction (Transação) table in the system.
     """
 
     __tablename__ = 'transaction'

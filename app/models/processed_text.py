@@ -1,3 +1,4 @@
+"""Model for processed text by AI."""
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class ProcessedText(AbstractBaseModel):
-    """Modelo SQLAlchemy para texto processado por IA."""
+    """Model for processed text by AI."""
 
     __tablename__ = 'processed_data'
 

@@ -1,3 +1,4 @@
+"""Model for Role (Perfil de usuário)."""
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Index
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 class Role(AbstractBaseModel):
     """
-    Representa a tabela de Perfil de usuário (Role)
+    Represents the Role (Perfil de usuário) table.
     """
 
     __tablename__ = 'role'

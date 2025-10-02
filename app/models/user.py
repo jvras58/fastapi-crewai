@@ -1,3 +1,4 @@
+"""Model for represents the User."""
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Index
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 class User(AbstractBaseModel):
     """
-    Representa a tabela Usuário no banco de dados.
+    Represents the User (Usuário) table in the database.
     """
 
     __tablename__ = 'user'
