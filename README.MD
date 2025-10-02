@@ -129,6 +129,15 @@ Para informações técnicas detalhadas sobre o projeto, consulte os documentos 
   - Pontos de saída (respostas e persistência)
   - Agrupamentos naturais do sistema
 
+### 🚀 **Deploy**
+- **Guia Completo**: [DOCS/DEPLOYMENT.md](DOCS/DEPLOYMENT.md) - Documentação detalhada sobre:
+  - Configuração do ambiente de produção com Docker
+  - Setup com PostgreSQL e Docker Compose
+  - Comandos para gerenciamento de containers
+  - Backup e restauração do banco de dados
+  - Considerações de segurança e performance
+  - Troubleshooting de problemas comuns
+
 ---
 
 ## ⚙️ Como Usar

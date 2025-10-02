@@ -11,6 +11,7 @@ dependencies = [
     "fastapi>=0.116.1",
     "langchain>=0.3.27",
     "langchain-google-genai>=2.1.10",
+    "psycopg2-binary>=2.9.0",
     "pydantic-settings>=2.10.1",
     "pydantic[email]>=2.11.9",
     "python-jose[cryptography]>=3.5.0",
