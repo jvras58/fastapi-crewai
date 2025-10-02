@@ -31,7 +31,7 @@ app_models = [
     'app.models.transaction',
     'app.models.assignment',
     'app.models.authorization',
-    'app.models.processed_data',
+    'app.models.processed_text',
 ]
 
 for module in app_models:
