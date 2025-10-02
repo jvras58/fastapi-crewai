@@ -1,30 +1,33 @@
-<h1 align="center">
-  <a href="#">Projeto com FastAPI + CrewAI</a>
+<h1 align="center"---
+
+## 📝 Sobre o Projeto
+
+Este projeto é uma aplicação backend construída com **FastAPI**, projetada para gerenciar usuários, papéis, permissões e transações em um sistema baseado em **Role-Based Access Control (RBAC)**. A API suporta autenticação via JWT, autorização granular, auditoria de ações e integração com um banco de dados usando SQLAlchemy como ORM.a href="#">Projeto com FastAPI + CrewAI</a>
 </h1>
 
 <p align="center">
-   Esté projeto Utiliza o FastAPI para servir Agentes inteligentes utilizando o CrewAI
+   Este projeto utiliza o FastAPI para servir Agentes inteligentes utilizando o CrewAI
 </p>
 
 <p align="center">
-  <a href="#memo-sobre-o-projeto">Sobre o Projeto</a> •
-  <a href="#rocket-tecnologias">Tecnologias</a> •
-  <a href="#clipboard-requisitos">Requisitos</a> •
-  <a href="#building_construction-arquitetura">Arquitetura</a> •
-  <a href="#information_source-como-usar">Como Usar</a> •
-  <a href="#handshake-como-contribuir">Como Contribuir</a> •
-  <a href="#memo-licença">Licença</a>
+  <a href="#📝-sobre-o-projeto">Sobre o Projeto</a> •
+  <a href="#🚀-tecnologias">Tecnologias</a> •
+  <a href="#📋-requisitos">Requisitos</a> •
+  <a href="#🔧-arquitetura">Arquitetura</a> •
+  <a href="#⚙️-como-usar">Como Usar</a> •
+  <a href="#🤝-como-contribuir">Como Contribuir</a> •
+  <a href="#📄-licença">Licença</a>
 </p>
 
 ---
 
-## :memo: Sobre o Projeto
+## � Contato
 
 Este projeto é uma aplicação backend construída com **FastAPI**, projetada para gerenciar usuários, papéis, permissões e transações em um sistema baseado em **Role-Based Access Control (RBAC)**. A API suporta autenticação via JWT, autorização granular, auditoria de ações e integração com um banco de dados usando SQLAlchemy como ORM.
 
 ### Funcionalidades Principais
 - **Autenticação**: Login de usuários com geração de tokens JWT.
-- **Autor authorization**: Controle de acesso baseado em papéis e permissões.
+- **Autorização**: Controle de acesso baseado em papéis e permissões.
 - **Gerenciamento de Usuários**: Criação, atualização, listagem e exclusão de usuários.
 - **Gestão de Papéis e Permissões**: Atribuição de papéis a usuários e permissões a papéis.
 - **Auditoria**: Registro de informações de auditoria (usuário, IP, data de criação/atualização).
@@ -34,7 +37,7 @@ O projeto é estruturado para ser modular, escalável e seguir boas práticas de
 
 ---
 
-## :rocket: Tecnologias
+## 🚀 Tecnologias
 
 Este projeto utiliza as seguintes tecnologias e ferramentas:
 
@@ -50,7 +53,7 @@ Este projeto utiliza as seguintes tecnologias e ferramentas:
 
 ---
 
-## :clipboard: Requisitos
+## 📋 Requisitos
 
 Para rodar ou contribuir com o projeto, você precisará das seguintes ferramentas instaladas:
 
@@ -65,7 +68,7 @@ Para rodar ou contribuir com o projeto, você precisará das seguintes ferrament
 
 ---
 
-## :building_construction: Arquitetura
+## 🔧 Arquitetura
 
 A estrutura do projeto é organizada para promover modularidade e facilitar a manutenção. Abaixo está a organização dos arquivos e diretórios:
 
@@ -86,6 +89,7 @@ FastAPI/
 ├── migrations/                 # Scripts de migração do banco de dados (Alembic)
 ├── seeds/                      # Scripts de seeds para a aplicação
 ├── tests/                      # Testes automatizados (pytest)
+├── DOCS/                      # Documentação detalhada
 ├── .secrets/                   # Arquivos sensíveis (ex.: SECURITY_API_SECRET_KEY)
 ├── .env-semple                 # Modelo para arquivo de configuração .env
 ├── alembic.ini                 # Configuração do Alembic
@@ -105,7 +109,31 @@ O projeto utiliza um modelo de dados baseado em RBAC, com as seguintes entidades
 
 ---
 
-## :information_source: Como Usar
+## 📚 Documentação Técnica
+
+Para informações técnicas detalhadas sobre o projeto, consulte os documentos específicos:
+
+### 📊 **Modelo de Entidades e Relacionamentos**
+- **Diagrama ER**: [DOCS/MODELS.png](DOCS/MODELS.png) - Visualização completa das entidades e seus relacionamentos no banco de dados.
+
+### 🔐 **Sistema de Permissões (RBAC)**
+- **Guia Completo**: [DOCS/PERMISSIONS.MD](DOCS/PERMISSIONS.MD) - Documentação detalhada sobre:
+  - Como um usuário novo ganha permissões
+  - Como criar novas permissões no sistema
+  - Estrutura hierárquica de roles
+  - Cenários práticos de uso
+  - Sistema de segurança e validações
+
+### 🔄 **Fluxograma da Aplicação**
+- **Fluxo Técnico**: [DOCS/FLUXOGRAMA.MD](DOCS/FLUXOGRAMA.MD) - Mapeamento completo dos fluxos da aplicação:
+  - Pontos de entrada (endpoints)
+  - Pontos de decisão (middlewares e validações)
+  - Pontos de saída (respostas e persistência)
+  - Agrupamentos naturais do sistema
+
+---
+
+## ⚙️ Como Usar
 
 Siga os passos abaixo para configurar e executar o projeto localmente.
 
@@ -204,13 +232,31 @@ O relatório de cobertura será gerado em `htmlcov/index.html`.
 
 ---
 
-## :memo: Licença
+## 🤝 Como Contribuir
+
+Contribuições são sempre bem-vindas! Para contribuir com o projeto:
+
+1. **Fork** o repositório
+2. Crie uma **branch** para sua feature (`git checkout -b feature/nova-feature`)
+3. **Commit** suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. **Push** para a branch (`git push origin feature/nova-feature`)
+5. Abra um **Pull Request**
+
+### Padrões de Contribuição
+- Siga as convenções de código estabelecidas
+- Escreva testes para novas funcionalidades
+- Mantenha a documentação atualizada
+- Use mensagens de commit descritivas
+
+---
+
+## 📄 Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE). Veja o arquivo `LICENSE` para mais detalhes.
 
 ---
 
-## :speech_balloon: Contato
+## 💬 Contato
 
 Se tiver dúvidas ou sugestões, entre em contato:
 - **Autores**: jvras <jvras58@gmail.com>
