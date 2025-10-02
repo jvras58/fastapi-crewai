@@ -96,7 +96,7 @@ docker compose exec -T postgres psql -U fastapi_user -d fastapi_crewai < backup.
 - **Health Check:** Configurado para garantir que está pronto antes da app iniciar
 
 ### FastAPI App
-- **Build:** Dockerfile local
+- **Build:** Dockerfile local (baseado no exemplo da [documentação do uv astral](https://github.com/astral-sh/uv-docker-example))
 - **Porta:** 8000
 - **Workers:** 4 (uvicorn)
 - **Dependências:** Aguarda o PostgreSQL estar healthy
