@@ -72,19 +72,22 @@ A estrutura do projeto é organizada para promover modularidade e facilitar a ma
 
 ```bash
 FastAPI/
-├── app/                        # Código-fonte principal da aplicação
-│   ├── api/                    # Definição de rotas, controladores e esquemas
-│   │   ├── assignment/         # Endpoints para designações (usuário-papel)
-│   │   ├── authentication/     # Endpoints para autenticação (login, JWT)
-│   │   ├── authorization/      # Endpoints para autorizações (papel-transação)
-│   │   ├── role/               # Endpoints para gerenciamento de papéis
-│   │   ├── transaction/        # Endpoints para gerenciamento de transações
-│   │   ├── user/               # Endpoints para gerenciamento de usuários
-│   ├── database/               # Configuração do banco de dados (SQLAlchemy)
-│   ├── models/                 # Modelos ORM para as entidades do sistema
-│   ├── utils/                  # Funções utilitárias (segurança, configurações, etc.)
-│   ├── startup.py              # Inicialização da aplicação FastAPI
+├── apps/                        # Código-fonte monolitico da aplicação
+│   ├── core/                    # API Restfull
+│ │   ├── api/                    # Definição de rotas, controladores e esquemas
+│ │   │   ├── assignment/         # Endpoints para designações (usuário-papel)
+│ │   │   ├── authentication/     # Endpoints para autenticação (login, JWT)
+│ │   │   ├── authorization/      # Endpoints para autorizações (papel-transação)
+│ │   │   ├── role/               # Endpoints para gerenciamento de papéis
+│ │   │   ├── transaction/        # Endpoints para gerenciamento de transações
+│ │   │   ├── user/               # Endpoints para gerenciamento de usuários
+│ │   ├── database/               # Configuração do banco de dados (SQLAlchemy)
+│ │   ├── models/                 # Modelos ORM para as entidades do sistema
+│ │   ├── utils/                  # Funções utilitárias (segurança, configurações, etc.)
+│     ├── startup.py              # Inicialização da aplicação FastAPI
+│   ├── ia/                     # Serviço de orquestração de agentes 
 ├── migrations/                 # Scripts de migração do banco de dados (Alembic)
+├── scripts/                    # Scripts para ativar ambiente e autogenerate de migrations para o banco 
 ├── seeds/                      # Scripts de seeds para a aplicação
 ├── tests/                      # Testes automatizados (pytest)
 ├── DOCS/                      # Documentação detalhada
