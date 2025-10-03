@@ -22,6 +22,7 @@ dependencies = [
     "sqlalchemy>=2.0.43",
     "uvicorn>=0.35.0",
     "langchain-community>=0.3.30",
+    "pymupdf>=1.26.4",
 ]
 [tool.setuptools.packages.find]
 where = ["apps"]
@@ -85,6 +86,14 @@ omit = [
     "*/__pycache__/*",
     "*/venv/*",
     "*/.venv/*",
+]
+# FIXME: omitido pois o pymupdf gera issue fechada: https://github.com/pymupdf/PyMuPDF/issues/3931
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning:importlib._bootstrap",
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning", 
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning"
 ]
 
 [tool.coverage.report]

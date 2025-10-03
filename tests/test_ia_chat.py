@@ -36,6 +36,7 @@ def test_simple_conversation_agent():
     try:
         response = agent.chat('Olá, como você está?')
         assert isinstance(response, str)
+        print("Resposta do agente:", response)
         assert len(response) > 0
     except Exception as e:
         # Skip test if API key is not configured
@@ -86,16 +87,6 @@ def test_document_model_creation():
 
     assert document.str_title == 'Documento de Teste'
     assert 'teste' in document.txt_content.lower()
-
-
-# Integration tests would go here with proper session fixtures
-# Example:
-# def test_chat_endpoint(client: TestClient, session: Session, test_user: User):
-#     """Test chat endpoint integration."""
-#     # Create test conversation
-#     # Send chat message
-#     # Verify response
-#     pass
 
 
 def test_rag_context_retrieval():
