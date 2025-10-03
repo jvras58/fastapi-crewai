@@ -8,7 +8,6 @@ Ref: https://stackoverflow.com/questions/9088957/sqlalchemy-cannot-find-a-class-
 """
 from apps.core.models.assignment import Assignment  # noqa F401
 from apps.core.models.authorization import Authorization  # noqa F401
-from apps.core.models.processed_text import ProcessedText  # noqa F401
 from apps.core.models.role import Role  # noqa F401
 from apps.core.models.transaction import Transaction  # noqa F401
 from apps.core.models.user import User  # noqa F401

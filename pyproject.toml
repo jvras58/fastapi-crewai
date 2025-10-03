@@ -2,7 +2,7 @@
 name = "FastAPI-CrewAI"
 version = "0.1.0"
 description = "Basic CRUD API with FastAPI, SQLAlchemy, and Alembic, integrated with CrewAI and LangChain for advanced AI capabilities."
-readme = "README.md"
+readme = "README.MD"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
@@ -21,7 +21,7 @@ dependencies = [
     "uvicorn>=0.35.0",
 ]
 [tool.setuptools.packages.find]
-where = ["app"]
+where = ["apps"]
 
 [dependency-groups]
 dev = [
@@ -39,12 +39,15 @@ dev = [
 [tool.taskipy.tasks]
 lint = "ruff check . && blue --check . --diff"
 format = "blue . && isort ."
+imports = "isort ."
+blue = "blue ."
 run = "uvicorn apps.core.startup:app --host 0.0.0.0 --port 8000 --reload"
 pre_test = "task lint"
 test = "pytest -s -x --cov=apps -vv"
 post_test = "coverage html"
 export_libs = "uv pip freeze > requirements.txt"
 migrate = "alembic upgrade head"
+automate_migrations = "./scripts/migrate.sh"
 seed_super_user = "python -m seeds.seed_super_user"
 seed_transactions = "python -m seeds.seed_transactions"
 setup_db = "alembic upgrade head && python -m seeds.seed_transactions && python -m seeds.seed_super_user"

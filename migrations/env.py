@@ -21,24 +21,17 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-# LOADIND MODELS -----------
+
+
+# LOADING MODELS -----------
 
 from apps.core.utils.base_model import Base
 
-app_models = [
-    'apps.core.models.user',
-    'apps.core.models.role',
-    'apps.core.models.transaction',
-    'apps.core.models.assignment',
-    'apps.core.models.authorization',
-    'apps.core.models.processed_text',
-]
-
-for module in app_models:
-    try:
-        loaded_module = importlib.import_module(module)
-    except ModuleNotFoundError:
-        print(f'Could not import module {module}')   # TODO: log this
+# Importa todos os modelos através do __init__.py
+try:
+    import apps.core.models  # noqa F401
+except ImportError as e:
+    print(f'Could not import models: {e}')
 
 target_metadata = Base.metadata
 # --------------------------
