@@ -9,7 +9,7 @@ class RAGSearchTool:
     def __init__(self, rag_service: RAGService):
         """Initialize the RAG search tool."""
         self.rag_service = rag_service
-        self.name = "rag_search"
+        self.name = 'rag_search'
         self.description = """
         Use esta ferramenta para buscar informações na base de conhecimento.
         Fornece contexto relevante baseado em similaridade semântica.
@@ -25,8 +25,8 @@ class RAGSearchTool:
 
             if not docs:
                 return (
-                    "Nenhuma informação relevante encontrada na "
-                    "base de conhecimento."
+                    'Nenhuma informação relevante encontrada na '
+                    'base de conhecimento.'
                 )
 
             # Formatar o contexto encontrado
@@ -34,9 +34,9 @@ class RAGSearchTool:
             for i, doc in enumerate(docs, 1):
                 source = doc.metadata.get('source', 'Desconhecido')
                 content = doc.page_content.strip()
-                context_parts.append(f"Fonte {i} ({source}):\n{content}")
+                context_parts.append(f'Fonte {i} ({source}):\n{content}')
 
-            return "\n\n".join(context_parts)
+            return '\n\n'.join(context_parts)
 
         except Exception as e:
-            return f"Erro ao buscar na base de conhecimento: {str(e)}"
+            return f'Erro ao buscar na base de conhecimento: {str(e)}'

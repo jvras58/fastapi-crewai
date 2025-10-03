@@ -191,7 +191,6 @@ def seed_transactions():
                 'audit_user_ip': '0.0.0.0',
                 'audit_user_login': 'system',
             },
-
         ]
 
         # Inserir cada transação, verificando se já existe

@@ -7,7 +7,7 @@ from uuid import uuid4
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr
 
@@ -34,19 +34,20 @@ class RAGService:
         # Para usar Google embeddings, precisamos configurar a chave da API
         # Como alternativa, podemos usar embeddings locais ou outros providers
         try:
-            api_key = os.getenv("GOOGLE_API_KEY")
+            api_key = os.getenv('GOOGLE_API_KEY')
             if not api_key:
-                raise ValueError("GOOGLE_API_KEY não configurada")
+                raise ValueError('GOOGLE_API_KEY não configurada')
             return GoogleGenerativeAIEmbeddings(
-                model="models/embedding-001",
-                google_api_key=SecretStr(api_key)
+                model='models/embedding-001', google_api_key=SecretStr(api_key)
             )
         except Exception:
             # Fallback para embeddings simples se Google não estiver disponível
             import numpy as np
 
             class SimpleEmbeddings(Embeddings):
-                def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                def embed_documents(
+                    self, texts: list[str]
+                ) -> list[list[float]]:
                     # Embedding simples baseado em hash para desenvolvimento
                     return [self._simple_embed(text) for text in texts]
 
@@ -66,7 +67,7 @@ class RAGService:
     ) -> None:
         """Add documents to the RAG knowledge base."""
         if metadatas is None:
-            metadatas = [{"source": f"doc_{uuid4()}"} for _ in texts]
+            metadatas = [{'source': f'doc_{uuid4()}'} for _ in texts]
 
         # Create Document objects
         documents = [
@@ -84,7 +85,9 @@ class RAGService:
 
         # Update vector store
         if self.vector_store is None:
-            self.vector_store = FAISS.from_documents(chunked_docs, self.embeddings)
+            self.vector_store = FAISS.from_documents(
+                chunked_docs, self.embeddings
+            )
         else:
             self.vector_store.add_documents(chunked_docs)
 
@@ -93,7 +96,7 @@ class RAGService:
     ) -> None:
         """Add a single document from text."""
         if metadata is None:
-            metadata = {"source": f"doc_{uuid4()}"}
+            metadata = {'source': f'doc_{uuid4()}'}
 
         self.add_documents([text], [metadata])
 
@@ -104,7 +107,9 @@ class RAGService:
 
         return self.vector_store.similarity_search(query, k=k)
 
-    def similarity_search_with_score(self, query: str, k: int = 3) -> list[tuple]:
+    def similarity_search_with_score(
+        self, query: str, k: int = 3
+    ) -> list[tuple]:
         """Perform similarity search with relevance scores."""
         if self.vector_store is None:
             return []
@@ -132,7 +137,7 @@ class RAGService:
                     context_parts.append(doc.page_content[:remaining_chars])
                 break
 
-        return "\n\n".join(context_parts)
+        return '\n\n'.join(context_parts)
 
     def clear_knowledge_base(self) -> None:
         """Clear all documents from the knowledge base."""
@@ -152,7 +157,5 @@ class RAGService:
         """Load a vector store from disk."""
         if os.path.exists(path):
             self.vector_store = FAISS.load_local(
-                path,
-                self.embeddings,
-                allow_dangerous_deserialization=True
+                path, self.embeddings, allow_dangerous_deserialization=True
             )

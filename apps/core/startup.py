@@ -12,40 +12,40 @@ from apps.core.api.user.router import router as user_router
 from apps.ia.api.chat.router import router as chat_router
 
 app = FastAPI(
-    title="FastAPI Starter faster than ever",
-    description="FastAPI Starter",
-    version="0.1.0",
-    openapi_url="/api/v1/openapi.json",
-    docs_url="/api/v1/docs",
-    redoc_url="/api/v1/redoc",
+    title='FastAPI Starter faster than ever',
+    description='FastAPI Starter',
+    version='0.1.0',
+    openapi_url='/api/v1/openapi.json',
+    docs_url='/api/v1/docs',
+    redoc_url='/api/v1/redoc',
     openapi_tags=[
         {
-            "name": "Users",
-            "description": "Operations with users",
+            'name': 'Users',
+            'description': 'Operations with users',
         },
         {
-            "name": "Auth",
-            "description": "Operations with authentication",
+            'name': 'Auth',
+            'description': 'Operations with authentication',
         },
         {
-            "name": "Transactions",
-            "description": "Operations with transactions",
+            'name': 'Transactions',
+            'description': 'Operations with transactions',
         },
         {
-            "name": "Roles",
-            "description": "Operations with roles",
+            'name': 'Roles',
+            'description': 'Operations with roles',
         },
         {
-            "name": "Assignments",
-            "description": "Operations with assignments",
+            'name': 'Assignments',
+            'description': 'Operations with assignments',
         },
         {
-            "name": "Authorizations",
-            "description": "Operations with authorizations",
+            'name': 'Authorizations',
+            'description': 'Operations with authorizations',
         },
         {
-            "name": "AI Chat",
-            "description": "Operations with AI chat and conversation management",
+            'name': 'AI Chat',
+            'description': 'Operations with AI chat and conversation management',
         },
     ],
 )
@@ -85,7 +85,7 @@ app.include_router(
 app.include_router(
     authorization_router, prefix='/authorization', tags=['Authorizations']
 )
-app.include_router(chat_router, prefix="/chat", tags=["AI Chat"])
+app.include_router(chat_router, prefix='/chat', tags=['AI Chat'])
 # ----------------------------------
 
 

@@ -21,59 +21,50 @@ class Message(AbstractBaseModel):
 
     # Conteúdo da mensagem
     txt_content: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-        name='txt_content'
+        Text, nullable=False, name='txt_content'
     )
 
     # Tipo da mensagem (user, assistant, system)
     str_role: Mapped[str] = mapped_column(
-        String(20),
-        nullable=False,
-        name='str_role'
+        String(20), nullable=False, name='str_role'
     )
 
     # Relacionamento com conversa
-    # FIXME: Ajuste para usar a back_populates ou forekeys conforme os modelos do core..
-    # nada de reenventar a roda!
     conversation_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey('ia_conversations.id'),
         nullable=False,
-        name='conversation_id'
+        name='conversation_id',
     )
 
     # Timestamp da mensagem
     dt_created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text('CURRENT_TIMESTAMP'),
-        name='dt_created_at'
+        name='dt_created_at',
     )
 
     # Metadados opcionais
     json_metadata: Mapped[str | None] = mapped_column(
-        Text,
-        nullable=True,
-        name='json_metadata'
+        Text, nullable=True, name='json_metadata'
     )
 
     # Status da mensagem
     str_status: Mapped[str] = mapped_column(
         String(20),
         server_default=text("'active'"),
-        name='str_status'  # active, edited, deleted
+        name='str_status',  # active, edited, deleted
     )
 
     # Relacionamentos
-    conversation: Mapped["Conversation"] = relationship(
-        "Conversation",
-        back_populates="messages"
+    conversation: Mapped['Conversation'] = relationship(
+        'Conversation', back_populates='messages', lazy='subquery'
     )
 
     def __repr__(self) -> str:
         """String representation of message."""
         content_preview = (
-            self.txt_content[:50] + "..."
+            self.txt_content[:50] + '...'
             if len(self.txt_content) > 50
             else self.txt_content
         )

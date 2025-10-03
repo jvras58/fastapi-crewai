@@ -23,7 +23,7 @@ class ConversationAgent:
     def _setup_agent(self) -> None:
         """Setup the CrewAI agent with tools and configuration."""
         self.agent = Agent(
-            role="Assistente Conversacional Inteligente",
+            role='Assistente Conversacional Inteligente',
             goal="""Fornecer respostas precisas e úteis baseadas no conhecimento
                     disponível e na conversa em andamento. Usar o contexto do RAG
                     quando relevante para enriquecer as respostas.""",
@@ -38,15 +38,19 @@ class ConversationAgent:
             allow_delegation=False,
         )
 
-    def chat(self, message: str, context: str = "") -> str:
+    def chat(self, message: str, context: str = '') -> str:
         """Process a chat message and return a response."""
         # Buscar contexto relevante no RAG
-        rag_context = self.rag_service.get_relevant_context(message, max_tokens=1500)
+        rag_context = self.rag_service.get_relevant_context(
+            message, max_tokens=1500
+        )
 
         # Combinar contextos
         full_context = context
         if rag_context:
-            full_context += f"\n\nInformações da base de conhecimento:\n{rag_context}"
+            full_context += (
+                f'\n\nInformações da base de conhecimento:\n{rag_context}'
+            )
 
         # Criar tarefa para o agent
         task = Task(
@@ -64,27 +68,23 @@ class ConversationAgent:
             agent=self.agent,
             expected_output="""Uma resposta conversacional clara e útil que aborde
                             a pergunta do usuário, utilizando informações do contexto
-                            quando relevantes."""
+                            quando relevantes.""",
         )
 
         # Executar a tarefa
-        crew = Crew(
-            agents=[self.agent],
-            tasks=[task],
-            verbose=True
-        )
+        crew = Crew(agents=[self.agent], tasks=[task], verbose=True)
 
         result = crew.kickoff()
         return str(result)
 
-    def add_knowledge(self, text: str, metadata: dict[str, Any] | None = None) -> None:
+    def add_knowledge(
+        self, text: str, metadata: dict[str, Any] | None = None
+    ) -> None:
         """Add knowledge to the RAG service."""
         self.rag_service.add_document_from_text(text, metadata)
 
     def add_multiple_documents(
-        self,
-        texts: list[str],
-        metadatas: list[dict[str, Any]] | None = None
+        self, texts: list[str], metadatas: list[dict[str, Any]] | None = None
     ) -> None:
         """Add multiple documents to the knowledge base."""
         self.rag_service.add_documents(texts, metadatas)
@@ -96,8 +96,8 @@ class ConversationAgent:
     def get_knowledge_stats(self) -> dict[str, Any]:
         """Get statistics about the knowledge base."""
         return {
-            "document_count": self.rag_service.get_document_count(),
-            "has_vector_store": self.rag_service.vector_store is not None
+            'document_count': self.rag_service.get_document_count(),
+            'has_vector_store': self.rag_service.vector_store is not None,
         }
 
     def search_knowledge(self, query: str, k: int = 3) -> list[Document]:
@@ -116,8 +116,8 @@ class SimpleConversationAgent:
     def _setup_agent(self) -> None:
         """Setup simple agent without RAG tools."""
         self.agent = Agent(
-            role="Assistente Conversacional",
-            goal="Fornecer respostas úteis e claras para as perguntas dos usuários",
+            role='Assistente Conversacional',
+            goal='Fornecer respostas úteis e claras para as perguntas dos usuários',
             backstory="""Você é um assistente AI amigável e prestativo que
                         responde perguntas de forma clara e concisa.""",
             tools=[],
@@ -135,14 +135,10 @@ class SimpleConversationAgent:
             Forneça uma resposta direta, informativa e amigável.
             """,
             agent=self.agent,
-            expected_output="Uma resposta clara e útil para a pergunta do usuário."
+            expected_output='Uma resposta clara e útil para a pergunta do usuário.',
         )
 
-        crew = Crew(
-            agents=[self.agent],
-            tasks=[task],
-            verbose=False
-        )
+        crew = Crew(agents=[self.agent], tasks=[task], verbose=False)
 
         result = crew.kickoff()
         return str(result)

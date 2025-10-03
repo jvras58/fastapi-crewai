@@ -21,6 +21,7 @@ dependencies = [
     "requests>=2.32.5",
     "sqlalchemy>=2.0.43",
     "uvicorn>=0.35.0",
+    "langchain-community>=0.3.30",
 ]
 [tool.setuptools.packages.find]
 where = ["apps"]

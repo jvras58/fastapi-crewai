@@ -1,6 +1,9 @@
 """AI clients integration module."""
 
-from apps.ia.agents.conversation_agent import ConversationAgent, SimpleConversationAgent
+from apps.ia.agents.conversation_agent import (
+    ConversationAgent,
+    SimpleConversationAgent,
+)
 from apps.ia.services.rag_service import RAGService
 
 # Instância global do serviço RAG

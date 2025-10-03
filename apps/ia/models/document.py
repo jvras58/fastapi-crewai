@@ -17,67 +17,51 @@ class Document(AbstractBaseModel):
 
     # Informações do documento
     str_title: Mapped[str] = mapped_column(
-        String(255),
-        nullable=False,
-        name='str_title'
+        String(255), nullable=False, name='str_title'
     )
 
     str_filename: Mapped[str | None] = mapped_column(
-        String(255),
-        nullable=True,
-        name='str_filename'
+        String(255), nullable=True, name='str_filename'
     )
 
     # Conteúdo
     txt_content: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-        name='txt_content'
+        Text, nullable=False, name='txt_content'
     )
 
     # Metadados
     str_content_type: Mapped[str | None] = mapped_column(
-        String(100),
-        nullable=True,
-        name='str_content_type'
+        String(100), nullable=True, name='str_content_type'
     )
 
     json_metadata: Mapped[str | None] = mapped_column(
-        Text,
-        nullable=True,
-        name='json_metadata'
+        Text, nullable=True, name='json_metadata'
     )
 
     # Status e controle
     str_status: Mapped[str] = mapped_column(
         String(20),
         server_default=text("'active'"),
-        name='str_status'  # active, processed, deleted
+        name='str_status',  # active, processed, deleted
     )
 
     dt_uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=text('CURRENT_TIMESTAMP'),
-        name='dt_uploaded_at'
+        name='dt_uploaded_at',
     )
 
     dt_processed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-        name='dt_processed_at'
+        DateTime(timezone=True), nullable=True, name='dt_processed_at'
     )
 
     # Tamanho e hash para controle
     int_size_bytes: Mapped[int | None] = mapped_column(
-        Integer,
-        nullable=True,
-        name='int_size_bytes'
+        Integer, nullable=True, name='int_size_bytes'
     )
 
     str_content_hash: Mapped[str | None] = mapped_column(
-        String(64),
-        nullable=True,
-        name='str_content_hash'
+        String(64), nullable=True, name='str_content_hash'
     )
 
     def __repr__(self) -> str:

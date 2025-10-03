@@ -12,7 +12,9 @@ from apps.core.api.authorization.schemas import (
     AuthorizationListSchema,
     AuthorizationSchema,
 )
-from apps.core.api.transaction.enum_operation_code import EnumOperationCode as op
+from apps.core.api.transaction.enum_operation_code import (
+    EnumOperationCode as op,
+)
 from apps.core.database.session import get_session
 from apps.core.models.authorization import Authorization
 from apps.core.models.user import User

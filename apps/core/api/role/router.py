@@ -12,7 +12,9 @@ from apps.core.api.role.schemas import (
     RoleListSchema,
     RoleSchema,
 )
-from apps.core.api.transaction.enum_operation_code import EnumOperationCode as op
+from apps.core.api.transaction.enum_operation_code import (
+    EnumOperationCode as op,
+)
 from apps.core.database.session import get_session
 from apps.core.models.role import Role
 from apps.core.models.user import User
