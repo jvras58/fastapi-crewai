@@ -1,7 +1,7 @@
 """Seed Transactions Module."""
-from apps.api.transaction.enum_operation_code import EnumOperationCode
-from apps.database.session import get_session
-from apps.models.transaction import Transaction
+from apps.core.api.transaction.enum_operation_code import EnumOperationCode
+from apps.core.database.session import get_session
+from apps.core.models.transaction import Transaction
 
 
 def seed_transactions():

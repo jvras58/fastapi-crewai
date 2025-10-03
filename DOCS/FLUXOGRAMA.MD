@@ -1,22 +1,22 @@
 ## Nós Iniciais (Pontos de Entrada)
 
 ### 1. **Endpoint Raiz**
-- **Localização**: `apps.startup:read_root`
+- **Localização**: `apps.core.startup:read_root`
 - **Função**: Verificação básica de saúde da API
 - **Resposta**: `{'message': 'Welcome to API!'}`
 
 ### 2. **Endpoints de Autenticação**
-- **Router**: `apps.api.authentication.router`
+- **Router**: `apps.core.api.authentication.router`
 - **Função**: Ponto de entrada para obtenção de tokens JWT
 - **Prefixo**: `/auth`
 
 ### 3. **Endpoints de Recursos Principais**
-- **Usuários**: `apps.api.user.router` - `/users`
-- **Roles**: `apps.api.role.router` - `/role`
-- **Transações**: `apps.api.transaction.router` - `/transaction`
-- **Assignments**: `apps.api.assignment.router` - `/assignment`
-- **Autorizações**: `apps.api.authorization.router` - `/authorization`
-- **Processamento de Texto IA**: `apps.api.text_processing.router` - `/text-processing`
+- **Usuários**: `apps.core.api.user.router` - `/users`
+- **Roles**: `apps.core.api.role.router` - `/role`
+- **Transações**: `apps.core.api.transaction.router` - `/transaction`
+- **Assignments**: `apps.core.api.assignment.router` - `/assignment`
+- **Autorizações**: `apps.core.api.authorization.router` - `/authorization`
+- **Processamento de Texto IA**: `apps.core.api.text_processing.router` - `/text-processing`
 
 ## Nós de Decisão (Pontos de Ramificação)
 
@@ -59,11 +59,11 @@
 ```
 User ↔ Assignment ↔ Role ↔ Authorization ↔ Transaction
 ```
-- **User**: `apps.models.user.User`
-- **Assignment**: `apps.models.assignment.Assignment`
-- **Role**: `apps.models.role.Role`
-- **Authorization**: `apps.models.authorization.Authorization`
-- **Transaction**: `apps.models.transaction.Transaction`
+- **User**: `apps.core.models.user.User`
+- **Assignment**: `apps.core.models.assignment.Assignment`
+- **Role**: `apps.core.models.role.Role`
+- **Authorization**: `apps.core.models.authorization.Authorization`
+- **Transaction**: `apps.core.models.transaction.Transaction`
 
 ### 2. **Sistema de Processamento de IA**
 - **Controlador**: `TextProcessingController`

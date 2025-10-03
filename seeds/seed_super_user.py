@@ -1,11 +1,11 @@
 """Seed script to create a super user with all permissions."""
-from apps.database.session import get_session
-from apps.models.assignment import Assignment
-from apps.models.authorization import Authorization
-from apps.models.role import Role
-from apps.models.transaction import Transaction
-from apps.models.user import User
-from apps.utils.security import get_password_hash
+from apps.core.database.session import get_session
+from apps.core.models.assignment import Assignment
+from apps.core.models.authorization import Authorization
+from apps.core.models.role import Role
+from apps.core.models.transaction import Transaction
+from apps.core.models.user import User
+from apps.core.utils.security import get_password_hash
 
 
 def seed_super_user():

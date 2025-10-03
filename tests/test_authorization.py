@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from sqlalchemy import select
 
-from apps.models.authorization import Authorization
+from apps.core.models.authorization import Authorization
 
 
 def test_authorization_db_structure(session, role, trasaction):
@@ -34,7 +34,7 @@ def test_authorization_db_structure(session, role, trasaction):
 
 def test_create_athorization(client, token, role, trasaction):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
 
         response = client.post(
@@ -59,7 +59,7 @@ def test_create_athorization(client, token, role, trasaction):
 
 def test_create_two_equals_athorization(client, token, role, trasaction):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/authorization/',
@@ -74,7 +74,7 @@ def test_create_two_equals_athorization(client, token, role, trasaction):
         assert response.json()['id'] == 1
         assert mocked_access_validation.assert_called_once
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/authorization/',
@@ -95,7 +95,7 @@ def test_create_two_equals_athorization(client, token, role, trasaction):
 
 def test_get_all_authorizations(client, token, authorization_10_plus_one):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/authorization/', headers={'Authorization': f'Bearer {token}'}
@@ -108,7 +108,7 @@ def test_get_all_authorizations(client, token, authorization_10_plus_one):
 
 def test_get_authorization_by_id(client, token, authorization_10_plus_one):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/authorization/1', headers={'Authorization': f'Bearer {token}'}
@@ -127,7 +127,7 @@ def test_get_authorization_by_id(client, token, authorization_10_plus_one):
 
 def test_get_authorization_by_id_not_found(client, token):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/authorization/1',
@@ -143,7 +143,7 @@ def test_get_authorization_by_id_not_found(client, token):
 
 def test_delete_authorization(client, token, authorization_10_plus_one):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/authorization/1', headers={'Authorization': f'Bearer {token}'}
@@ -156,7 +156,7 @@ def test_delete_authorization(client, token, authorization_10_plus_one):
 
 def test_delete_authorization_not_found(client, token):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/authorization/1', headers={'Authorization': f'Bearer {token}'}
@@ -171,7 +171,7 @@ def test_delete_authorization_not_found(client, token):
 
 def test_update_authorization(client, token, authorization_10_plus_one):
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role',
@@ -186,7 +186,7 @@ def test_update_authorization(client, token, authorization_10_plus_one):
         new_role_id = response.json()['id']
         assert mocked_access_validation.assert_called_once
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/authorization/1', headers={'Authorization': f'Bearer {token}'}
@@ -196,7 +196,7 @@ def test_update_authorization(client, token, authorization_10_plus_one):
         old_role_id = response.json()['role_id']
         assert mocked_access_validation.assert_called_once
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/authorization/1',
@@ -221,7 +221,7 @@ def test_update_authorization(client, token, authorization_10_plus_one):
 
 def test_update_authorization_not_found(client, token):
     with patch(
-        'apps.api.authorization.router.validate_transaction_access'
+        'apps.core.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/authorization/1',

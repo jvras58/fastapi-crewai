@@ -1,6 +1,6 @@
 from jose import jwt
 
-from apps.utils.security import create_access_token
+from apps.core.utils.security import create_access_token
 
 
 def test_jwt_token():

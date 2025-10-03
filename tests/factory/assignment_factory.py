@@ -1,6 +1,6 @@
 import factory
 
-from apps.models.assignment import Assignment
+from apps.core.models.assignment import Assignment
 from tests.factory.role_factory import RoleFactory
 from tests.factory.user_factory import UserFactory
 

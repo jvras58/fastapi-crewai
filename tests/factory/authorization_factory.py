@@ -1,6 +1,6 @@
 import factory
 
-from apps.models.authorization import Authorization
+from apps.core.models.authorization import Authorization
 from tests.factory.role_factory import RoleFactory
 from tests.factory.trasaction_factory import TransactonFactory
 

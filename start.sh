@@ -47,4 +47,4 @@ echo "✅ Migrações concluídas com sucesso!"
 
 # Inicie a aplicação FastAPI com Uvicorn
 echo "🌟 Iniciando a aplicação FastAPI com uvicorn..."
-exec uvicorn apps.startup:app --host 0.0.0.0 --port 8000 --workers 4
+exec uvicorn apps.core.startup:app --host 0.0.0.0 --port 8000 --workers 4

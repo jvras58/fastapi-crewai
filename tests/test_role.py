@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from sqlalchemy import select
 
-from apps.models.role import Role
+from apps.core.models.role import Role
 
 
 def test_db_structure_role_entity(session):
@@ -28,7 +28,7 @@ def test_db_structure_role_entity(session):
 def test_get_role_by_id(client, token, role_10):
     """Test get role."""
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
 
         response = client.get(
@@ -44,7 +44,7 @@ def test_get_role_by_id(client, token, role_10):
 
 def test_get_all_roles(client, token, role_10):
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/role/', headers={'Authorization': f'Bearer {token}'}
@@ -58,7 +58,7 @@ def test_get_all_roles(client, token, role_10):
 
 def test_create_role(client, token):
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -80,7 +80,7 @@ def test_create_role(client, token):
 def test_create_role_with_name_already_exist(client, token):
     role_data = {'name': 'Role TEST2', 'description': 'description test'}
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -90,7 +90,7 @@ def test_create_role_with_name_already_exist(client, token):
 
         assert response.status_code == 201
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -106,7 +106,7 @@ def test_create_role_with_name_already_exist(client, token):
 def test_update_role(client, token):
     role_data = {'name': 'Role TEST2', 'description': 'description test'}
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -116,7 +116,7 @@ def test_update_role(client, token):
 
         assert response.status_code == 201
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/role/1',
@@ -136,7 +136,7 @@ def test_update_role(client, token):
 def test_update_none_existent_role(client, token):
     """Test update a none existent role."""
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/role/1000000',
@@ -155,7 +155,7 @@ def test_update_none_existent_role(client, token):
 def test_delete_role(client, token):
     role_data = {'name': 'Role TEST2', 'description': 'description test'}
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -166,7 +166,7 @@ def test_delete_role(client, token):
         assert response.status_code == 201
         assert mocked_access_validation.assert_called_once
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/role/1',
@@ -181,7 +181,7 @@ def test_delete_role(client, token):
 
 def test_delete_role_not_found(client, token):
     with patch(
-        'apps.api.role.router.validate_transaction_access'
+        'apps.core.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/role/1',

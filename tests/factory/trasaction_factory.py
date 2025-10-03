@@ -1,6 +1,6 @@
 import factory
 
-from apps.models.transaction import Transaction
+from apps.core.models.transaction import Transaction
 
 
 class TransactonFactory(factory.Factory):

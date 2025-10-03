@@ -1,6 +1,6 @@
 import factory
 
-from apps.models.role import Role
+from apps.core.models.role import Role
 
 
 class RoleFactory(factory.Factory):

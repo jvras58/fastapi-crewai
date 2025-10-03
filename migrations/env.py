@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from apps.utils.settings import get_settings
+from apps.core.utils.settings import get_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,15 +23,15 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 # LOADIND MODELS -----------
 
-from apps.utils.base_model import Base
+from apps.core.utils.base_model import Base
 
 app_models = [
-    'apps.models.user',
-    'apps.models.role',
-    'apps.models.transaction',
-    'apps.models.assignment',
-    'apps.models.authorization',
-    'apps.models.processed_text',
+    'apps.core.models.user',
+    'apps.core.models.role',
+    'apps.core.models.transaction',
+    'apps.core.models.assignment',
+    'apps.core.models.authorization',
+    'apps.core.models.processed_text',
 ]
 
 for module in app_models:
