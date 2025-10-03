@@ -81,11 +81,14 @@ FastAPI/
 │ │   │   ├── role/               # Endpoints para gerenciamento de papéis
 │ │   │   ├── transaction/        # Endpoints para gerenciamento de transações
 │ │   │   ├── user/               # Endpoints para gerenciamento de usuários
+│ │   ├── clients/                # Clients do Agente de IA
 │ │   ├── database/               # Configuração do banco de dados (SQLAlchemy)
 │ │   ├── models/                 # Modelos ORM para as entidades do sistema
 │ │   ├── utils/                  # Funções utilitárias (segurança, configurações, etc.)
 │     ├── startup.py              # Inicialização da aplicação FastAPI
-│   ├── ia/                     # Serviço de orquestração de agentes 
+│   ├── ia/                     # Serviço de orquestração de agentes
+│ │   ├── api/                    # Definição de rotas, controladores e esquemas
+│ │   │   ├── xxxx/
 ├── migrations/                 # Scripts de migração do banco de dados (Alembic)
 ├── scripts/                    # Scripts para ativar ambiente e autogenerate de migrations para o banco 
 ├── seeds/                      # Scripts de seeds para a aplicação

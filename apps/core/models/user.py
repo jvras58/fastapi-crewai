@@ -8,6 +8,7 @@ from apps.core.utils.base_model import AbstractBaseModel
 
 if TYPE_CHECKING:
     from apps.core.models.assignment import Assignment
+    from apps.ia.models.conversation import Conversation
 
 
 class User(AbstractBaseModel):
@@ -25,6 +26,9 @@ class User(AbstractBaseModel):
 
     assignments: Mapped[list["Assignment"]] = relationship(
         back_populates="user", lazy="subquery"
+    )
+    conversations: Mapped[list["Conversation"]] = relationship(
+        "Conversation", back_populates="user", lazy="select"
     )
     __table_args__ = (
         Index('idx_user_username', username, unique=True),
