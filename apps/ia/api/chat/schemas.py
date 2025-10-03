@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from apps.core.utils.base_schemas import BaseAuditModelSchema
+from apps.packpage.base_schemas import BaseAuditModelSchema
 
 
 # Schemas para mensagens

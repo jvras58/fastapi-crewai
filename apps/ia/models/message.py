@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from apps.core.utils.base_model import AbstractBaseModel
+from apps.packpage.base_model import AbstractBaseModel
 
 if TYPE_CHECKING:
     from apps.ia.models.conversation import Conversation

@@ -9,7 +9,6 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from apps.core.models.user import User
-from apps.core.utils.generic_controller import GenericController
 from apps.ia.agents.conversation_agent import ConversationAgent
 from apps.ia.api.chat.schemas import (
     ChatMessageSchema,
@@ -22,8 +21,10 @@ from apps.ia.models.conversation import Conversation
 from apps.ia.models.document import Document
 from apps.ia.models.message import Message
 from apps.ia.services.rag_service import RAGService
+from apps.packpage.generic_controller import GenericController
 
 
+# TODO: Refatorar para usar GenericController Se for possivel claro
 class ChatController(GenericController):
     """Controller for chat operations."""
 

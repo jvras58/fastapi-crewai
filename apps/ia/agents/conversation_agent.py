@@ -5,9 +5,9 @@ from typing import Any
 from crewai import Agent, Crew, Task
 from langchain.schema import Document
 
-from apps.core.utils.llm import get_llm
 from apps.ia.services.rag_service import RAGService
 from apps.ia.tools.rag_search_tool import RAGSearchTool
+from apps.packpage.llm import get_llm
 
 
 class ConversationAgent:

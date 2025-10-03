@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from apps.core.api.authentication.controller import get_current_user
 from apps.core.database.session import get_session
 from apps.core.models.user import User
-from apps.core.utils.client_ip import get_client_ip
 from apps.ia.api.chat.controller import ChatController
 from apps.ia.api.chat.schemas import (
     ChatMessageSchema,
@@ -22,6 +21,7 @@ from apps.ia.api.chat.schemas import (
     DocumentSchema,
     DocumentUploadSchema,
 )
+from apps.packpage.client_ip import get_client_ip
 
 router = APIRouter()
 

@@ -36,7 +36,7 @@ def test_simple_conversation_agent():
     try:
         response = agent.chat('Olá, como você está?')
         assert isinstance(response, str)
-        print("Resposta do agente:", response)
+        print('Resposta do agente:', response)
         assert len(response) > 0
     except Exception as e:
         # Skip test if API key is not configured

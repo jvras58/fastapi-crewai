@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, Integer, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from apps.core.utils.base_model import AbstractBaseModel
+from apps.packpage.base_model import AbstractBaseModel
 
 
 class Document(AbstractBaseModel):

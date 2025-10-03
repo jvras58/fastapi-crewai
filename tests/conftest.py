@@ -12,8 +12,8 @@ from apps.core.models.role import Role
 from apps.core.models.transaction import Transaction
 from apps.core.models.user import User
 from apps.core.startup import app
-from apps.core.utils.base_model import Base
 from apps.core.utils.security import get_password_hash
+from apps.packpage.base_model import Base
 from tests.factory.assignment_factory import (
     AssignmentFactory,
     create_assignment,

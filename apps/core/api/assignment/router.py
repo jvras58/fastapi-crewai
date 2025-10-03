@@ -18,13 +18,13 @@ from apps.core.api.transaction.enum_operation_code import (
 from apps.core.database.session import get_session
 from apps.core.models.assignment import Assignment
 from apps.core.models.user import User
-from apps.core.utils.base_schemas import SimpleMessageSchema
-from apps.core.utils.client_ip import get_client_ip
-from apps.core.utils.exceptions import (
+from apps.packpage.base_schemas import SimpleMessageSchema
+from apps.packpage.client_ip import get_client_ip
+from apps.packpage.exceptions import (
     IntegrityValidationException,
     ObjectNotFoundException,
 )
-from apps.core.utils.generic_controller import GenericController
+from apps.packpage.generic_controller import GenericController
 
 router = APIRouter()
 controller = GenericController(Assignment)
