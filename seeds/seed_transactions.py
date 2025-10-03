@@ -191,13 +191,7 @@ def seed_transactions():
                 'audit_user_ip': '0.0.0.0',
                 'audit_user_login': 'system',
             },
-            {
-                'operation_code': EnumOperationCode.OP_2000001.value,
-                'name': 'Data Processing - Execute',
-                'description': 'Perform data processing with AI',
-                'audit_user_ip': '0.0.0.0',
-                'audit_user_login': 'system',
-            },
+
         ]
 
         # Inserir cada transação, verificando se já existe
