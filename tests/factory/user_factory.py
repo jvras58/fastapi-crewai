@@ -1,6 +1,6 @@
 import factory
 
-from app.models.user import User
+from apps.models.user import User
 
 
 class UserFactory(factory.Factory):

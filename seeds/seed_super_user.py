@@ -1,11 +1,11 @@
 """Seed script to create a super user with all permissions."""
-from app.database.session import get_session
-from app.models.assignment import Assignment
-from app.models.authorization import Authorization
-from app.models.role import Role
-from app.models.transaction import Transaction
-from app.models.user import User
-from app.utils.security import get_password_hash
+from apps.database.session import get_session
+from apps.models.assignment import Assignment
+from apps.models.authorization import Authorization
+from apps.models.role import Role
+from apps.models.transaction import Transaction
+from apps.models.user import User
+from apps.utils.security import get_password_hash
 
 
 def seed_super_user():
@@ -44,7 +44,7 @@ def seed_super_user():
         # Check if admin_user and super_admin_role are valid
         if not admin_user or not super_admin_role:
             raise RuntimeError(
-                "Failed to create or retrieve administrator user or SUPER ADMIN role"
+                'Failed to create or retrieve administrator user or SUPER ADMIN role'
             )
 
         # 3. Insert assignment linking user to role

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from sqlalchemy import select
 
-from app.models.assignment import Assignment
+from apps.models.assignment import Assignment
 
 
 def test_db_structure_assignment_entity(session, user, role):
@@ -33,7 +33,7 @@ def test_db_structure_assignment_entity(session, user, role):
 def test_get_assignment_by_id(client, token, assignment_10):
     """Test get assignment by id."""
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
 
         mocked_access_validation.return_value = None
@@ -66,7 +66,7 @@ def test_get_assignment_by_id_unauthorized(client, assignment_10):
 
 def test_get_all_assignments(client, token, assignment_10):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/assignment/', headers={'Authorization': f'Bearer {token}'}
@@ -79,7 +79,7 @@ def test_get_all_assignments(client, token, assignment_10):
 
 def test_create_assignment(client, token, role, user):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/assignment/',
@@ -103,7 +103,7 @@ def test_create_assignment(client, token, role, user):
 
 def test_create_two_equals_assignment_to_a_user(client, token, user, role):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/assignment/',
@@ -135,7 +135,7 @@ def test_create_two_equals_assignment_to_a_user(client, token, user, role):
 
 def test_update_assignment(client, token, assignment_10, role_10):
     with patch(
-        'app.api.role.router.validate_transaction_access'
+        'apps.api.role.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/role/',
@@ -145,7 +145,7 @@ def test_update_assignment(client, token, assignment_10, role_10):
 
         new_role_id = response.json()['id']
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/assignment/3', headers={'Authorization': f'Bearer {token}'}
@@ -154,7 +154,7 @@ def test_update_assignment(client, token, assignment_10, role_10):
         assert response.json()['role_id'] == 3
         assert mocked_access_validation.assert_called
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/assignment/3',
@@ -165,7 +165,7 @@ def test_update_assignment(client, token, assignment_10, role_10):
             },
         )
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/assignment/3', headers={'Authorization': f'Bearer {token}'}
@@ -185,7 +185,7 @@ def test_update_assignment_integrity_error(
     client, token, assignment_10, role_10
 ):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
 
         response = client.get(
@@ -212,7 +212,7 @@ def test_update_assignment_integrity_error(
 
 def test_delete_assingnment(client, token, assignment_10):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/assignment/3',
@@ -227,7 +227,7 @@ def test_delete_assingnment(client, token, assignment_10):
 
 def test_delete_assingnment_not_found(client, token):
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             '/assignment/3',

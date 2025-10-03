@@ -35,13 +35,13 @@ dev = [
     "ruff>=0.13.0",
     "taskipy>=1.14.1",
 ]
-# uv run (commands) sample = uv run pytest -s -x --cov=app -vv
+# uv run (commands) sample = uv run pytest -s -x --cov=apps -vv
 [tool.taskipy.tasks]
 lint = "ruff check . && blue --check . --diff"
 format = "blue . && isort ."
-run = "uvicorn app.startup:app --host 0.0.0.0 --port 8000 --reload"
+run = "uvicorn apps.startup:app --host 0.0.0.0 --port 8000 --reload"
 pre_test = "task lint"
-test = "pytest -s -x --cov=app -vv"
+test = "pytest -s -x --cov=apps -vv"
 post_test = "coverage html"
 export_libs = "uv pip freeze > requirements.txt"
 migrate = "alembic upgrade head"
@@ -70,3 +70,22 @@ exclude = [".venv", "migrations"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 ignore = ["UP046"]  # Ignore Generic subclass rule for compatibility with blue formatter
+
+[tool.coverage.run]
+source = ["apps"]
+omit = [
+    "*/tests/*",
+    "*/migrations/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

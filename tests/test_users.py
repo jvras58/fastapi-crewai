@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from sqlalchemy import select
 
-from app.api.user.schemas import UserPublic
-from app.models.user import User
+from apps.api.user.schemas import UserPublic
+from apps.models.user import User
 from tests.factory.user_factory import UserFactory
 
 
@@ -78,7 +78,7 @@ def test_create_user_already_exists_fail(client, user):
 
 def test_read_users(client, token):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/users/', headers={'Authorization': f'Bearer {token}'}
@@ -91,7 +91,7 @@ def test_read_users(client, token):
 
 def test_get_user_by_id(client, user, token):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             f'/users/{user.id}',
@@ -108,7 +108,7 @@ def test_get_user_by_id(client, user, token):
 
 def test_read_users_with_users(client, user, token):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         user_schema = UserPublic.model_validate(user).model_dump()
         response = client.get(
@@ -120,7 +120,7 @@ def test_read_users_with_users(client, user, token):
 
 def test_update_user_success(client, user, token):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             f'/users/{user.id}',
@@ -144,7 +144,7 @@ def test_update_user_success(client, user, token):
 
 def test_update_user_fail(client, user):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             '/users/2',
@@ -162,7 +162,7 @@ def test_update_user_fail(client, user):
 
 def test_delete_user_success(client, user, token):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             f'/users/{user.id}',
@@ -176,7 +176,7 @@ def test_delete_user_success(client, user, token):
 
 def test_delete_user_fail(client, user):
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete('/users/2')
 
@@ -190,7 +190,7 @@ def test_get_user_transactions(
 ):
     # SETUP
     with patch(
-        'app.api.assignment.router.validate_transaction_access'
+        'apps.api.assignment.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/assignment/',
@@ -205,7 +205,7 @@ def test_get_user_transactions(
 
     transactions_ids: list[int] = []
     with patch(
-        'app.api.authorization.router.validate_transaction_access'
+        'apps.api.authorization.router.validate_transaction_access'
     ) as mocked_access_validation:
 
         for transaction in transaction_10_plus_one[:4]:
@@ -224,7 +224,7 @@ def test_get_user_transactions(
 
     # VERIFICATION TEST
     with patch(
-        'app.api.user.router.validate_transaction_access'
+        'apps.api.user.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             f'/users/{user.id}/transactions',

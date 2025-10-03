@@ -5,15 +5,15 @@ from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.database.session import get_session
-from app.models.assignment import Assignment
-from app.models.authorization import Authorization
-from app.models.role import Role
-from app.models.transaction import Transaction
-from app.models.user import User
-from app.startup import app
-from app.utils.base_model import Base
-from app.utils.security import get_password_hash
+from apps.database.session import get_session
+from apps.models.assignment import Assignment
+from apps.models.authorization import Authorization
+from apps.models.role import Role
+from apps.models.transaction import Transaction
+from apps.models.user import User
+from apps.startup import app
+from apps.utils.base_model import Base
+from apps.utils.security import get_password_hash
 from tests.factory.assignment_factory import (
     AssignmentFactory,
     create_assignment,

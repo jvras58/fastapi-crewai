@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from sqlalchemy import select
 
-from app.models.transaction import Transaction
+from apps.models.transaction import Transaction
 
 
 def test_db_structure_trasaction_entity(session):
@@ -29,7 +29,7 @@ def test_db_structure_trasaction_entity(session):
 
 def test_create_transaction_success(client, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/transaction/',
@@ -62,7 +62,7 @@ def test_create_transaction_IntegrityValidationException(
     client, token, transaction_10_plus_one
 ):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.post(
             '/transaction/',
@@ -84,7 +84,7 @@ def test_create_transaction_IntegrityValidationException(
 
 def test_update_transaction_sucess(client, token, transaction_10_plus_one):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/transaction/?op_code=TEST666',
@@ -93,7 +93,7 @@ def test_update_transaction_sucess(client, token, transaction_10_plus_one):
         trans_id = response.json()['transactions'][0]['id']
         assert mocked_access_validation.assert_called_once
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.put(
             f'/transaction/{trans_id}',
@@ -120,7 +120,7 @@ def test_update_transaction_sucess(client, token, transaction_10_plus_one):
 
 def test_update_transaction_not_found(client, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         non_existent_transaction_id = 9999
         response = client.put(
@@ -140,7 +140,7 @@ def test_update_transaction_not_found(client, token):
 
 def test_get_transaction_by_op_code(client, transaction_10_plus_one, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/transaction/?op_code=TEST666',
@@ -158,7 +158,7 @@ def test_get_transaction_by_op_code(client, transaction_10_plus_one, token):
 
 def test_list_transactions(client, transaction_200, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/transaction/?limit=300',
@@ -174,7 +174,7 @@ def test_list_transactions(client, transaction_200, token):
 
 def test_get_transaction_by_id(client, transaction_10_plus_one, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/transaction/10',
@@ -192,7 +192,7 @@ def test_get_transaction_by_id(client, transaction_10_plus_one, token):
 
 def test_delete_transection_success(client, token, transaction_10_plus_one):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.get(
             '/transaction/?op_code=TEST666',
@@ -201,7 +201,7 @@ def test_delete_transection_success(client, token, transaction_10_plus_one):
         trans_id = response.json()['transactions'][0]['id']
         assert mocked_access_validation.assert_called_once
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         response = client.delete(
             f'/transaction/{trans_id}',
@@ -215,7 +215,7 @@ def test_delete_transection_success(client, token, transaction_10_plus_one):
 
 def test_delete_none_existent_transaction(client, token):
     with patch(
-        'app.api.transaction.router.validate_transaction_access'
+        'apps.api.transaction.router.validate_transaction_access'
     ) as mocked_access_validation:
         non_existent_transaction_id = 9999
         response = client.delete(
