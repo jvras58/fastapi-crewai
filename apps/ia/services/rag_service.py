@@ -11,7 +11,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr
 
-from apps.core.utils.settings import get_settings
+from apps.packpage.settings import get_settings
 
 
 class RAGService:
