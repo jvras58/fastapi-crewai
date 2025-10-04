@@ -7,21 +7,21 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
     "bcrypt>=4.3.0",
-    "crewai>=0.186.1",
+    "crewai>=0.201.1",
     "fastapi>=0.116.1",
-    "langchain>=0.3.27",
+    "langchain>=0.3.76",
     "langchain-google-genai>=2.1.10",
     "faiss-cpu>=1.8.0",
     "numpy>=1.24.0",
     "psycopg2-binary>=2.9.0",
     "pydantic-settings>=2.10.1",
-    "pydantic[email]>=2.11.9",
+    "pydantic[email]>=2.11.10",
     "python-jose[cryptography]>=3.5.0",
     "python-multipart>=0.0.20",
     "requests>=2.32.5",
     "sqlalchemy>=2.0.43",
     "uvicorn>=0.35.0",
-    "langchain-community>=0.3.30",
+    "langchain-community>=0.3.76",
     "pymupdf>=1.26.4",
 ]
 [tool.setuptools.packages.find]
@@ -87,13 +87,16 @@ omit = [
     "*/venv/*",
     "*/.venv/*",
 ]
-# FIXME: omitido pois o pymupdf gera issue fechada: https://github.com/pymupdf/PyMuPDF/issues/3931
+# FIXME: omitido pois o pymupdf(importlib._bootstrap,SwigPyPacked, SwigPyObject e swigvarlink) gera issue fechada: https://github.com/pymupdf/PyMuPDF/issues/3931
+# FIXME: omitido pois o Pydantic está conflitando com o CrewAI/LangChain (https://github.com/langflow-ai/langflow/issues/7462)
 [tool.pytest.ini_options]
 filterwarnings = [
     "ignore::DeprecationWarning:importlib._bootstrap",
     "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
     "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning", 
-    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning"
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+    "ignore:Pydantic serializer warnings:UserWarning",
+    "ignore:Expected.*fields but got.*Expected.*Message.*serialized value may not be as expected:UserWarning"
 ]
 
 [tool.coverage.report]

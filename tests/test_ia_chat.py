@@ -76,8 +76,8 @@ def test_chat_controller_initialization():
     """Test chat controller initialization."""
     controller = ChatController()
     assert controller is not None
-    assert hasattr(controller, "rag_service")
     assert hasattr(controller, "conversation_agent")
+    assert controller.conversation_agent is not None
 
 
 def test_create_conversation_with_database(session, user):
