@@ -14,10 +14,6 @@ from apps.ia.api.chat.schemas import (
 from apps.ia.models.conversation import Conversation
 from apps.ia.models.message import Message
 
-# =============================================================================
-# Agent Tests
-# =============================================================================
-
 
 def test_simple_conversation_agent():
     """Test simple conversation agent."""
@@ -30,11 +26,6 @@ def test_simple_conversation_agent():
         assert len(response) > 0
     except Exception as e:
         pytest.skip(f"API não configurada: {e}")
-
-
-# =============================================================================
-# Model Tests
-# =============================================================================
 
 
 def test_conversation_model_creation():
@@ -67,11 +58,6 @@ def test_message_model_creation():
     assert message.str_role == "user"
 
 
-# =============================================================================
-# Controller Tests with Database
-# =============================================================================
-
-
 def test_chat_controller_initialization():
     """Test chat controller initialization."""
     controller = ChatController()
@@ -102,8 +88,6 @@ def test_create_conversation_with_database(session, user):
 def test_get_user_conversation(session, conversation_with_messages, user):
     """Test getting a specific user conversation."""
     controller = ChatController()
-
-    # Test getting existing conversation
     result = controller.get_user_conversation(
         session, conversation_with_messages.id, user.id
     )
@@ -112,11 +96,9 @@ def test_get_user_conversation(session, conversation_with_messages, user):
     assert result.id == conversation_with_messages.id
     assert result.user_id == user.id
 
-    # Test getting non-existent conversation
     result = controller.get_user_conversation(session, 99999, user.id)
     assert result is None
 
-    # Test getting conversation from another user
     result = controller.get_user_conversation(
         session, conversation_with_messages.id, 99999
     )
@@ -127,7 +109,6 @@ def test_get_user_conversations_with_pagination(session, multiple_conversations,
     """Test getting user conversations with pagination."""
     controller = ChatController()
 
-    # Test first page
     result = controller.get_user_conversations(session, user.id, page=1, per_page=5)
 
     assert "conversations" in result
@@ -136,11 +117,10 @@ def test_get_user_conversations_with_pagination(session, multiple_conversations,
     assert "per_page" in result
 
     assert len(result["conversations"]) <= 5
-    assert result["total"] == 15  # Created 15 conversations
+    assert result["total"] == 15
     assert result["page"] == 1
     assert result["per_page"] == 5
 
-    # Test second page
     result_page2 = controller.get_user_conversations(
         session, user.id, page=2, per_page=5
     )
@@ -151,7 +131,6 @@ def test_get_user_conversations_with_pagination(session, multiple_conversations,
 @patch("apps.ia.api.chat.controller.ConversationAgent")
 def test_send_message_new_conversation(mock_agent_class, session, user):
     """Test sending a message to create a new conversation."""
-    # Mock the agent response
     mock_agent = Mock()
     mock_agent.chat.return_value = "Olá! Como posso ajudar você?"
     mock_agent_class.return_value = mock_agent
@@ -168,7 +147,6 @@ def test_send_message_new_conversation(mock_agent_class, session, user):
     assert response.message_id is not None
     assert response.user_message_id is not None
 
-    # Verify conversation was created
     conversation = session.get(Conversation, response.conversation_id)
     assert conversation is not None
     assert conversation.user_id == user.id
@@ -180,7 +158,6 @@ def test_send_message_existing_conversation(
     mock_agent_class, session, conversation_with_messages, user
 ):
     """Test sending a message to an existing conversation."""
-    # Mock the agent response
     mock_agent = Mock()
     mock_agent.chat.return_value = "Entendi sua pergunta!"
     mock_agent_class.return_value = mock_agent
@@ -200,11 +177,8 @@ def test_send_message_existing_conversation(
     assert response.response == "Entendi sua pergunta!"
     assert response.conversation_id == conversation_with_messages.id
 
-    # Verify messages were added
     session.refresh(conversation_with_messages)
-    assert (
-        len(conversation_with_messages.messages) == initial_message_count + 2
-    )  # user + assistant
+    assert len(conversation_with_messages.messages) == initial_message_count + 2
 
 
 def test_update_conversation(session, conversation, user):
@@ -238,16 +212,6 @@ def test_update_nonexistent_conversation(session, user):
     assert result is None
 
 
-# =============================================================================
-# Title Generation Tests
-# =============================================================================
-
-
-# =============================================================================
-# Generic Controller Methods Tests
-# =============================================================================
-
-
 def test_chat_controller_save_method(session, user):
     """Test the overridden save method in ChatController."""
     controller = ChatController()
@@ -256,7 +220,6 @@ def test_chat_controller_save_method(session, user):
         str_title="Conversa Save Test",
         str_description="Testando método save",
         user_id=user.id,
-        # str_status is not set, should default to 'active'
         audit_user_ip="127.0.0.1",
         audit_user_login=user.username,
     )
@@ -264,7 +227,7 @@ def test_chat_controller_save_method(session, user):
     saved_conversation = controller.save(session, conversation)
 
     assert saved_conversation.id is not None
-    assert saved_conversation.str_status == "active"  # Default value
+    assert saved_conversation.str_status == "active"
     assert saved_conversation.str_title == "Conversa Save Test"
 
 
@@ -272,7 +235,6 @@ def test_chat_controller_update_method(session, conversation, user):
     """Test the overridden update method in ChatController."""
     controller = ChatController()
 
-    # Update the conversation
     conversation.str_title = "Título Atualizado via Update"
     conversation.str_description = "Descrição atualizada"
 
