@@ -1,121 +1,110 @@
-# FastAPI + CrewAI Copilot Instructions
+# Copilot Instructions for FastAPI + CrewAI Project
 
-## Architecture Overview
+## Project Overview
+This is a FastAPI backend with integrated CrewAI agents, built around a Role-Based Access Control (RBAC) system. The project combines traditional REST APIs with intelligent AI conversation capabilities using RAG (Retrieval Augmented Generation).
 
-This is a **modular FastAPI application** with AI integration capabilities using CrewAI and LangChain. The project has a dual-service architecture:
+## Architecture & Service Boundaries
 
-- **`apps/core/`**: Complete RBAC (Role-Based Access Control) API with FastAPI, SQLAlchemy, JWT auth
-- **`apps/ia/`**: AI orchestration service (currently placeholder for CrewAI agents)
+### Core Services
+- **`apps/core/`**: Main RBAC API with authentication, authorization, and user management
+- **`apps/ia/`**: AI service with CrewAI agents, conversation management, and RAG capabilities  
+- **`apps/packpage/`**: Shared utilities, base models, and generic controllers
 
-Key architectural decisions:
-- **Monolithic structure** with modular separation between REST API (`core`) and AI services (`ia`) 
-- **Generic controller pattern** for consistent CRUD operations across all entities
-- **Comprehensive audit trail** with IP tracking and user attribution on all database operations
-- **Factory-based testing** with isolated in-memory SQLite for each test
+### Key Components
+- **Startup**: `apps/core/startup.py` defines the FastAPI app, middleware stack, and all routers
+- **Models**: All SQLAlchemy models must be imported in `apps/core/models/__init__.py` for relationship resolution
+- **Base Model**: `apps/packpage/base_model.py` provides `AbstractBaseModel` with audit fields (user_ip, created_at, updated_on, user_login)
 
-## Essential Project Patterns
-
-### Database Models & ORM
-All models inherit from `AbstractBaseModel` (in `apps/core/utils/base_model.py`) which provides:
-```python
-audit_user_ip: Mapped[str] 
-audit_created_at: Mapped[datetime]
-audit_updated_on: Mapped[datetime] 
-audit_user_login: Mapped[str]
-```
-
-**Column naming convention**: Use `name=` parameter with descriptive prefixes:
-- `str_` for strings: `display_name: Mapped[str] = mapped_column(name='str_display_name')`
-- `id` for primary keys: `id: Mapped[int] = mapped_column(primary_key=True, name='id')`
-
-### API Structure Pattern
-Each API module follows strict organization:
-```
-apps/core/api/{entity}/
-├── controller.py    # Business logic, inherits GenericController
-├── router.py       # FastAPI routes with dependency injection
-└── schemas.py      # Pydantic models for request/response
-```
-
-**Router dependencies pattern**:
-```python
-DbSession = Annotated[Session, Depends(get_session)]
-CurrentUser = Annotated[User, Depends(get_current_user)]
-```
-
-### Controller Inheritance
-Extend `GenericController` for consistent CRUD:
-```python
-class UserController(GenericController):
-    def __init__(self) -> None:
-        super().__init__(User)  # Pass model to parent
-```
-
-Override `save()`/`update()` for special logic (e.g., password hashing in UserController).
-
-### Authentication & Authorization
-- JWT tokens via `python-jose` 
-- Route protection using `get_current_user` dependency
-- Transaction-based authorization system (users → roles → transactions)
-- Client IP tracking via `get_client_ip(request)` utility
-
-## Critical Developer Workflows
+## Development Workflows
 
 ### Environment Setup
 ```bash
+# Use UV for dependency management (not pip)
 uv sync                    # Install dependencies
-task setup_db             # Run migrations + seed data  
-task run                  # Start development server
+uv run task run           # Start development server
+uv run task test          # Run tests with coverage
 ```
 
-### Database Operations  
+### Database Migrations
 ```bash
-task automate_migrations "description"  # Auto-generate migration
-task migrate                            # Apply pending migrations
-task seed_super_user                   # Create admin user
-task seed_transactions                 # Seed transaction data
-```
-
-### Testing & Quality
-```bash
-task test                 # Run tests with coverage
-task lint                 # Check code style (ruff + blue)  
-task format               # Auto-format code (blue + isort)
+# Auto-generate migrations (models must be imported in __init__.py first)
+./scripts/migrate.sh "description"
+alembic upgrade head      # Apply migrations
 ```
 
 ### Docker Development
-```bash
-docker compose up         # PostgreSQL + FastAPI containers
-# App runs on :8000, PostgreSQL on :5433
+- Uses `ghcr.io/astral-sh/uv:python3.12-bookworm-slim` base image
+- `start.sh` handles PostgreSQL connection waiting and DB setup
+- Dev container configuration available for VS Code
+
+## Project-Specific Conventions
+
+### Controller Pattern
+All controllers inherit from `GenericController[T]` providing standard CRUD operations:
+```python
+class UserController(GenericController):
+    def __init__(self) -> None:
+        super().__init__(User)  # Pass model to generic controller
 ```
 
-## Key Configuration Files
+### Router Structure
+Each feature has its own `router.py` with FastAPI routers:
+- Tag-based organization (Users, Auth, AI Chat, etc.)
+- All routers registered in `startup.py` with prefixes
 
-- **`pyproject.toml`**: Dependencies, dev tools, taskipy commands
-- **`apps/core/utils/settings.py`**: Environment configuration with `.env` + `.secrets/` support
-- **`alembic.ini`**: Database migration configuration  
-- **`compose.yml`**: PostgreSQL + app containers with environment injection
+### Authentication & Authorization
+- JWT tokens via `python-jose`
+- RBAC system: User → Assignment → Role → Authorization → Transaction
+- Custom `AuthorizationMiddleware` for request processing (currently minimal)
+- Password hashing via `bcrypt` in controller save/update methods
 
-## Testing Conventions
+### AI Integration Patterns
+- **CrewAI Agents**: Located in `apps/ia/agents/` with role-goal-backstory pattern
+- **RAG Service**: `apps/ia/services/rag_service.py` handles document indexing and semantic search
+- **LLM Configuration**: Centralized in `apps/packpage/llm.py` using Groq API
+- **Conversation Management**: Persistent chat history in database models
 
-Tests use **factory-boy pattern** with isolated sessions:
-- `tests/factory/`: Model factories for consistent test data
-- `tests/conftest.py`: SQLite in-memory setup with automatic cleanup
-- Each test gets fresh database via `session` fixture
-- Client fixture provides TestClient with dependency overrides
+### Testing Patterns
+- Factory-based test data generation in `tests/factory/`
+- `conftest.py` provides TestClient with database session override
+- Use `pytest -s -x --cov=apps -vv` for testing with coverage
 
-## AI Integration Points
+### Environment Configuration
+- **Required**: `GROQ_API_KEY` for AI functionality
+- **Optional**: `GOOGLE_API_KEY` for Google embeddings
+- Database URL supports SQLite (default) and PostgreSQL
+- Audit fields automatically populated via `client_ip.py` middleware
 
-The `apps/ia/` module is designed for CrewAI agent orchestration. Current dependencies include:
-- `crewai>=0.186.1`
-- `langchain>=0.3.27` 
-- `langchain-google-genai>=2.1.10`
+## Integration Points
 
-Environment expects `GROQ_API_KEY` for AI model access.
+### Database Session Management
+- `apps/core/database/session.py` provides session dependency injection
+- All controllers receive `Session` parameter for database operations
 
-## Important Notes
+### Cross-Service Communication
+- Core RBAC services are stateless and authentication-agnostic at the model level
+- AI services integrate with core via shared database models (`apps/ia/models/`)
+- No direct service-to-service calls; communication via shared database
 
-- **All model operations require audit fields**: Set `audit_user_ip` and `audit_user_login` on create/update
-- **Use taskipy commands** instead of direct tool calls: `task run` not `uvicorn ...`
-- **Database URLs**: SQLite for development (`database.db`), PostgreSQL for containers
-- **API documentation**: Available at `/api/v1/docs` (Swagger) and `/api/v1/redoc`
+### External Dependencies
+- **CrewAI**: Agent orchestration and task management
+- **LangChain**: RAG implementation with FAISS vector store
+- **FastAPI**: Web framework with automatic OpenAPI generation
+- **Alembic**: Database schema migrations
+- **UV**: Modern Python package manager replacing pip/poetry
+
+## File Creation Guidelines
+
+### Adding New Features
+1. Create model in `apps/core/models/` and import in `__init__.py`
+2. Generate migration with `./scripts/migrate.sh "description"`
+3. Create controller extending `GenericController`
+4. Add router with appropriate tags and register in `startup.py`
+5. Add factory in `tests/factory/` and corresponding test file
+
+### AI Components
+- New agents go in `apps/ia/agents/` following the role-goal-backstory pattern
+- Tools for agents should be in `apps/ia/tools/`
+- RAG-related services belong in `apps/ia/services/`
+
+Remember: This project uses UV (not pip), requires model imports in `__init__.py`, and follows a strict RBAC permission model that should be respected when adding new endpoints.

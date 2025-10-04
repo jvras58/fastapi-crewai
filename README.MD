@@ -71,36 +71,53 @@ Para rodar ou contribuir com o projeto, você precisará das seguintes ferrament
 A estrutura do projeto é organizada para promover modularidade e facilitar a manutenção. Abaixo está a organização dos arquivos e diretórios:
 
 ```bash
-FastAPI/
-├── apps/                        # Código-fonte monolitico da aplicação
-│   ├── core/                    # API Restfull
-│ │   ├── api/                    # Definição de rotas, controladores e esquemas
-│ │   │   ├── assignment/         # Endpoints para designações (usuário-papel)
-│ │   │   ├── authentication/     # Endpoints para autenticação (login, JWT)
-│ │   │   ├── authorization/      # Endpoints para autorizações (papel-transação)
-│ │   │   ├── role/               # Endpoints para gerenciamento de papéis
-│ │   │   ├── transaction/        # Endpoints para gerenciamento de transações
-│ │   │   ├── user/               # Endpoints para gerenciamento de usuários
-│ │   ├── clients/                # Clients do Agente de IA
-│ │   ├── database/               # Configuração do banco de dados (SQLAlchemy)
-│ │   ├── models/                 # Modelos ORM para as entidades do sistema
-│ │   ├── utils/                  # Funções utilitárias (segurança, configurações, etc.)
-│     ├── startup.py              # Inicialização da aplicação FastAPI
-│   ├── ia/                     # Serviço de orquestração de agentes
-│ │   ├── api/                    # Definição de rotas, controladores e esquemas
-│ │   │   ├── xxxx/
-├── migrations/                 # Scripts de migração do banco de dados (Alembic)
-├── scripts/                    # Scripts para ativar ambiente e autogenerate de migrations para o banco 
-├── seeds/                      # Scripts de seeds para a aplicação
-├── tests/                      # Testes automatizados (pytest)
-├── DOCS/                      # Documentação detalhada
-├── .secrets/                   # Arquivos sensíveis (ex.: SECURITY_API_SECRET_KEY)
-├── .env-semple                 # Modelo para arquivo de configuração .env
-├── alembic.ini                 # Configuração do Alembic
-├── uv.lock                    # Lockfile do uv com dependências fixas
-├── pyproject.toml              # Configuração do projeto e dependências
-├── .gitignore                  # Arquivos e pastas ignorados pelo Git
-├── .tool-versions              # Versões das ferramentas utilizadas
+FastAPI-CrewAI/
+├── apps/                        # Aplicações do monólito
+│   ├── core/                    # 🔐 API REST com RBAC
+│   │   ├── api/                 # Endpoints da API
+│   │   │   ├── assignment/      # 👥 Designações (usuário-papel)
+│   │   │   ├── authentication/  # 🔑 Autenticação (login, JWT)
+│   │   │   ├── authorization/   # ✅ Autorizações (papel-transação)
+│   │   │   ├── role/            # 🏷️ Gerenciamento de papéis
+│   │   │   ├── transaction/     # 📋 Gerenciamento de transações
+│   │   │   ├── user/            # 👤 Gerenciamento de usuários
+│   │   │   └── text_processing/ # 🔄 Processamento de texto (bridge para IA)
+│   │   ├── database/            # 🗄️ Configuração SQLAlchemy
+│   │   ├── models/              # 📊 Modelos ORM (User, Role, etc.)
+│   │   ├── utils/               # 🛠️ Utilitários (segurança, configs)
+│   │   └── startup.py           # 🚀 Inicialização FastAPI
+│   │
+│   ├── ia/                      # 🤖 Serviço de Agentes IA
+│   │   ├── agents/              # 🧠 Definição dos agentes CrewAI
+│   │   ├── api/                 # 🌐 Endpoints específicos da IA
+│   │   │   └── chat/            # 💭 Chat com agentes
+│   │   ├── models/              # 📈 Modelos específicos da IA
+│   │   ├── services/            # ⚙️ Serviços da IA
+│   │   │   └── rag_service.py   # 🔍 RAG com LangChain
+│   │   └── tools/               # 🔧 Ferramentas para agentes
+│   │       └── rag_search_tool.py # 🔎 Ferramenta de busca RAG
+│   │
+│   └── packpage/                # 📦 Utilitários compartilhados
+│       ├── base_model.py        # 🏗️ Modelo base com auditoria
+│       ├── llm.py               # 🧮 Configuração LLM (Groq)
+│       └── generic_controller.py # 🎮 Controller genérico CRUD
+│
+├── migrations/                  # 🔄 Migrações Alembic
+├── scripts/                     # 📜 Scripts de automação
+├── seeds/                       # 🌱 Dados iniciais
+├── tests/                       # 🧪 Testes automatizados
+│   ├── factory/                 # 🏭 Factories para testes
+│   └── conftest.py              # ⚙️ Configuração pytest
+├── DOCS/                        # 📚 Documentação
+│   ├── PERMISSIONS.MD           # 🔐 Guia RBAC
+│   ├── FLUXOGRAMA.MD           # 🔄 Fluxos da aplicação
+│   └── DEPLOYMENT.md            # 🚀 Deploy em produção
+├── .devcontainer/               # 🐳 Configuração dev container
+├── .secrets/                    # 🔒 Arquivos sensíveis
+├── .env-semple                  # 📋 Template de configuração
+├── alembic.ini                  # ⚙️ Configuração Alembic
+├── uv.lock                      # 🔒 Lockfile dependências
+└── pyproject.toml               # 📦 Configuração projeto
 ```
 
 ### Modelo de Dados
@@ -112,6 +129,20 @@ O projeto utiliza um modelo de dados baseado em RBAC, com as seguintes entidades
 - **Authorization**: Associa papéis a transações, definindo permissões.
 
 ---
+
+### 🔗 **Integração entre Serviços**
+
+- **Core ↔ IA**: Comunicação via modelos compartilhados no banco
+- **Auditoria Unificada**: Todos os serviços usam [`AbstractBaseModel`](apps/packpage/base_model.py)
+- **Autenticação Centralizada**: JWT válido para ambos os serviços
+- **RAG Integration**: [`rag_service.py`](apps/ia/services/rag_service.py) indexa documentos, [`rag_search_tool.py`](apps/ia/tools/rag_search_tool.py) realiza buscas
+
+### 🏗️ **Padrões Arquiteturais**
+
+- **Repository Pattern**: [`GenericController`](apps/packpage/generic_controller.py) para CRUD
+- **Factory Pattern**: Factories em [`tests/factory/`](tests/factory/) para dados de teste
+- **Middleware Pattern**: [`AuthorizationMiddleware`](apps/core/api/authorization/middleware.py) para interceptação
+- **Service Layer**: Serviços específicos em [`apps/ia/services/`](apps/ia/services/)
 
 ## 📚 Documentação Técnica
 
