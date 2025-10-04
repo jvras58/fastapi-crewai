@@ -102,7 +102,7 @@ class RAGService:
 
     def similarity_search(self, query: str, k: int = 3) -> list[Document]:
         """Perform similarity search in the knowledge base."""
-        if self.vector_store is None:
+        if self.vector_store is None or not query.strip() or k <= 0:
             return []
 
         return self.vector_store.similarity_search(query, k=k)
@@ -111,7 +111,7 @@ class RAGService:
         self, query: str, k: int = 3
     ) -> list[tuple]:
         """Perform similarity search with relevance scores."""
-        if self.vector_store is None:
+        if self.vector_store is None or not query.strip() or k <= 0:
             return []
 
         return self.vector_store.similarity_search_with_score(query, k=k)

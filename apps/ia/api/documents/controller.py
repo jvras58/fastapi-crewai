@@ -1,0 +1,121 @@
+"""Controller for chat and conversation management."""
+
+import hashlib
+import json
+from datetime import UTC, datetime
+from typing import Any
+
+from sqlalchemy.orm import Session
+
+from apps.core.models.user import User
+from apps.ia.agents.conversation_agent import ConversationAgent
+from apps.ia.api.documents.schemas import DocumentUploadSchema
+from apps.ia.models.document import Document
+from apps.ia.services.rag_service import RAGService
+from apps.packpage.generic_controller import GenericController
+
+
+class DocController(GenericController):
+    """Controller for chat operations."""
+
+    def __init__(self) -> None:
+        """Initialize document controller."""
+        super().__init__(Document)
+        self.rag_service = RAGService()
+        self.conversation_agent = ConversationAgent(self.rag_service)
+
+    def upload_document(
+        self,
+        session: Session,
+        document_data: DocumentUploadSchema,
+        current_user: User,
+        request_ip: str,
+    ) -> Document:
+        """Upload document to knowledge base."""
+
+        # Calcular hash do conteúdo
+        content_hash = hashlib.sha256(document_data.content.encode("utf-8")).hexdigest()
+
+        # Verificar se documento já existe
+        existing_doc = (
+            session.query(Document)
+            .filter(Document.str_content_hash == content_hash)
+            .first()
+        )
+
+        if existing_doc:
+            raise ValueError("Documento com este conteúdo já existe")
+
+        # Criar documento
+        document = Document(
+            str_title=document_data.title,
+            str_filename=document_data.filename,
+            txt_content=document_data.content,
+            str_content_type=document_data.content_type,
+            json_metadata=(
+                json.dumps(document_data.metadata) if document_data.metadata else None
+            ),
+            int_size_bytes=len(document_data.content.encode("utf-8")),
+            str_content_hash=content_hash,
+            str_status="active",
+            audit_user_ip=request_ip,
+            audit_user_login=current_user.username,
+        )
+
+        session.add(document)
+        session.commit()
+
+        # Adicionar ao RAG
+        metadata = document_data.metadata or {}
+        metadata.update(
+            {
+                "doc_id": document.id,
+                "title": document.str_title,
+                "source": f"document_{document.id}",
+            }
+        )
+
+        self.rag_service.add_document_from_text(document_data.content, metadata)
+
+        document.dt_processed_at = datetime.now(UTC)
+        session.commit()
+
+        return document
+
+    def get_documents(
+        self, session: Session, page: int = 1, per_page: int = 20
+    ) -> dict[str, Any]:
+        """Get documents with pagination."""
+        query = (
+            session.query(Document)
+            .filter(Document.str_status == 'active')
+            .order_by(Document.dt_uploaded_at.desc())
+        )
+
+        total = query.count()
+        documents = query.offset((page - 1) * per_page).limit(per_page).all()
+
+        return {
+            'documents': documents,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
+        }
+
+    def search_knowledge_base(
+        self, query: str, k: int = 5
+    ) -> list[dict[str, Any]]:
+        """Search the knowledge base."""
+        docs = self.rag_service.similarity_search(query, k=k)
+
+        results = []
+        for doc in docs:
+            results.append(
+                {
+                    'content': doc.page_content,
+                    'metadata': doc.metadata,
+                    'source': doc.metadata.get('source', 'unknown'),
+                }
+            )
+
+        return results

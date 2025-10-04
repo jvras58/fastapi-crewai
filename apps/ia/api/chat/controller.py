@@ -1,7 +1,5 @@
 """Controller for chat and conversation management."""
 
-import hashlib
-import json
 from datetime import UTC, datetime
 from typing import Any
 
@@ -15,24 +13,60 @@ from apps.ia.api.chat.schemas import (
     ChatResponseSchema,
     ConversationCreateSchema,
     ConversationUpdateSchema,
-    DocumentUploadSchema,
 )
 from apps.ia.models.conversation import Conversation
-from apps.ia.models.document import Document
 from apps.ia.models.message import Message
 from apps.ia.services.rag_service import RAGService
 from apps.packpage.generic_controller import GenericController
 
 
-# TODO: Refatorar para usar GenericController Se for possivel claro
 class ChatController(GenericController):
     """Controller for chat operations."""
 
-    def __init__(self):
+    def __init__(self, conversation_agent: ConversationAgent | None = None) -> None:
         """Initialize chat controller."""
         super().__init__(Conversation)
-        self.rag_service = RAGService()
-        self.conversation_agent = ConversationAgent(self.rag_service)
+        if conversation_agent is None:
+            rag_service = RAGService()
+            conversation_agent = ConversationAgent(rag_service)
+        self.conversation_agent = conversation_agent
+
+    def save(self, db_session: Session, obj: Conversation) -> Conversation:
+        """Save a new conversation with additional processing."""
+        # Definir valores padrão se não fornecidos
+        if not obj.str_status:
+            obj.str_status = "active"
+
+        saved_conversation = super().save(db_session, obj)
+
+        # Lógica adicional específica de conversas pode ser adicionada aqui
+        # Por exemplo: notificações, logs, etc.
+
+        return saved_conversation
+
+    def update(self, db_session: Session, obj: Conversation) -> Conversation:
+        """Update an existing conversation with additional processing."""
+        # Lógica específica antes da atualização
+        # Por exemplo: validações específicas, auditoria adicional, etc.
+
+        # Usar o método update do GenericController
+        updated_conversation = super().update(db_session, obj)
+
+        # Lógica adicional após a atualização pode ser adicionada aqui
+
+        return updated_conversation
+
+    def get_user_conversation(
+        self, session: Session, conversation_id: int, user_id: int
+    ) -> Conversation | None:
+        """Get a specific conversation for a user."""
+        try:
+            conversation = self.get(session, conversation_id)
+            if conversation.user_id != user_id or conversation.str_status == "deleted":
+                return None
+            return conversation
+        except Exception:
+            return None
 
     def send_message(
         self,
@@ -45,19 +79,11 @@ class ChatController(GenericController):
 
         # Encontrar ou criar conversa
         if chat_data.conversation_id:
-            conversation = (
-                session.query(Conversation)
-                .filter(
-                    and_(
-                        Conversation.id == chat_data.conversation_id,
-                        Conversation.user_id == current_user.id,
-                        Conversation.str_status == 'active',
-                    )
-                )
-                .first()
+            conversation = self.get_user_conversation(
+                session, chat_data.conversation_id, current_user.id
             )
 
-            if not conversation:
+            if not conversation or conversation.str_status != "active":
                 raise ValueError(
                     'Conversa não encontrada ou não pertence ao usuário'
                 )
@@ -186,9 +212,7 @@ class ChatController(GenericController):
             audit_user_login=current_user.username,
         )
 
-        session.add(conversation)
-        session.commit()
-        return conversation
+        return self.save(session, conversation)
 
     def get_user_conversations(
         self, session: Session, user_id: int, page: int = 1, per_page: int = 20
@@ -221,17 +245,7 @@ class ChatController(GenericController):
         self, session: Session, conversation_id: int, user_id: int
     ) -> Conversation | None:
         """Get conversation with messages."""
-        return (
-            session.query(Conversation)
-            .filter(
-                and_(
-                    Conversation.id == conversation_id,
-                    Conversation.user_id == user_id,
-                    Conversation.str_status != 'deleted',
-                )
-            )
-            .first()
-        )
+        return self.get_user_conversation(session, conversation_id, user_id)
 
     def update_conversation(
         self,
@@ -242,134 +256,25 @@ class ChatController(GenericController):
         request_ip: str,
     ) -> Conversation | None:
         """Update a conversation."""
-        conversation = (
-            session.query(Conversation)
-            .filter(
-                and_(
-                    Conversation.id == conversation_id,
-                    Conversation.user_id == current_user.id,
-                )
-            )
-            .first()
-        )
+        try:
+            conversation = self.get(session, conversation_id)
 
-        if not conversation:
+            # Verificar se a conversa pertence ao usuário
+            if conversation.user_id != current_user.id:
+                return None
+
+            # Atualizar campos se fornecidos
+            if conversation_data.title is not None:
+                conversation.str_title = conversation_data.title
+            if conversation_data.description is not None:
+                conversation.str_description = conversation_data.description
+            if conversation_data.status is not None:
+                conversation.str_status = conversation_data.status
+
+            # Atualizar auditoria
+            conversation.audit_user_ip = request_ip
+            conversation.audit_user_login = current_user.username
+
+            return self.update(session, conversation)
+        except Exception:
             return None
-
-        # Atualizar campos se fornecidos
-        if conversation_data.title is not None:
-            conversation.str_title = conversation_data.title
-        if conversation_data.description is not None:
-            conversation.str_description = conversation_data.description
-        if conversation_data.status is not None:
-            conversation.str_status = conversation_data.status
-
-        # Atualizar auditoria
-        conversation.audit_user_ip = request_ip
-        conversation.audit_user_login = current_user.username
-
-        session.commit()
-        return conversation
-
-    def upload_document(
-        self,
-        session: Session,
-        document_data: DocumentUploadSchema,
-        current_user: User,
-        request_ip: str,
-    ) -> Document:
-        """Upload document to knowledge base."""
-
-        # Calcular hash do conteúdo
-        content_hash = hashlib.sha256(
-            document_data.content.encode('utf-8')
-        ).hexdigest()
-
-        # Verificar se documento já existe
-        existing_doc = (
-            session.query(Document)
-            .filter(Document.str_content_hash == content_hash)
-            .first()
-        )
-
-        if existing_doc:
-            raise ValueError('Documento com este conteúdo já existe')
-
-        # Criar documento
-        document = Document(
-            str_title=document_data.title,
-            str_filename=document_data.filename,
-            txt_content=document_data.content,
-            str_content_type=document_data.content_type,
-            json_metadata=(
-                json.dumps(document_data.metadata)
-                if document_data.metadata
-                else None
-            ),
-            int_size_bytes=len(document_data.content.encode('utf-8')),
-            str_content_hash=content_hash,
-            str_status='active',
-            audit_user_ip=request_ip,
-            audit_user_login=current_user.username,
-        )
-
-        session.add(document)
-        session.commit()
-
-        # Adicionar ao RAG
-        metadata = document_data.metadata or {}
-        metadata.update(
-            {
-                'doc_id': document.id,
-                'title': document.str_title,
-                'source': f'document_{document.id}',
-            }
-        )
-
-        self.rag_service.add_document_from_text(
-            document_data.content, metadata
-        )
-
-        # Marcar como processado
-        document.dt_processed_at = datetime.now(UTC)
-        session.commit()
-
-        return document
-
-    def get_documents(
-        self, session: Session, page: int = 1, per_page: int = 20
-    ) -> dict[str, Any]:
-        """Get documents with pagination."""
-        query = (
-            session.query(Document)
-            .filter(Document.str_status == 'active')
-            .order_by(Document.dt_uploaded_at.desc())
-        )
-
-        total = query.count()
-        documents = query.offset((page - 1) * per_page).limit(per_page).all()
-
-        return {
-            'documents': documents,
-            'total': total,
-            'page': page,
-            'per_page': per_page,
-        }
-
-    def search_knowledge_base(
-        self, query: str, k: int = 5
-    ) -> list[dict[str, Any]]:
-        """Search the knowledge base."""
-        docs = self.rag_service.similarity_search(query, k=k)
-
-        results = []
-        for doc in docs:
-            results.append(
-                {
-                    'content': doc.page_content,
-                    'metadata': doc.metadata,
-                    'source': doc.metadata.get('source', 'unknown'),
-                }
-            )
-
-        return results

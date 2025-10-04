@@ -13,6 +13,9 @@ from apps.core.models.transaction import Transaction
 from apps.core.models.user import User
 from apps.core.startup import app
 from apps.core.utils.security import get_password_hash
+from apps.ia.models.conversation import Conversation
+from apps.ia.models.document import Document
+from apps.ia.models.message import Message
 from apps.packpage.base_model import Base
 from tests.factory.assignment_factory import (
     AssignmentFactory,
@@ -279,3 +282,132 @@ def authorization_10_plus_one(session, role, transaction_10_plus_one):
     session.add_all(authorizations)
     session.commit()
     return authorizations
+
+
+@pytest.fixture
+def conversation(session, user):
+    """Create a test conversation."""
+    conversation = Conversation(
+        str_title="Conversa de Teste",
+        str_description="Uma conversa para testes",
+        user_id=user.id,
+        str_status="active",
+        audit_user_ip="127.0.0.1",
+        audit_user_login=user.username,
+    )
+    session.add(conversation)
+    session.commit()
+    session.refresh(conversation)
+    return conversation
+
+
+@pytest.fixture
+def conversation_with_messages(session, user):
+    """Create a conversation with several messages for testing."""
+    conversation = Conversation(
+        str_title="Conversa com Mensagens",
+        str_description="Conversa com múltiplas mensagens",
+        user_id=user.id,
+        str_status="active",
+        audit_user_ip="127.0.0.1",
+        audit_user_login=user.username,
+    )
+    session.add(conversation)
+    session.flush()
+
+    messages = [
+        Message(
+            txt_content="Primeira mensagem do usuário",
+            str_role="user",
+            conversation_id=conversation.id,
+            str_status="active",
+            audit_user_ip="127.0.0.1",
+            audit_user_login=user.username,
+        ),
+        Message(
+            txt_content="Resposta do assistente",
+            str_role="assistant",
+            conversation_id=conversation.id,
+            str_status="active",
+            audit_user_ip="127.0.0.1",
+            audit_user_login=user.username,
+        ),
+        Message(
+            txt_content="Segunda mensagem do usuário",
+            str_role="user",
+            conversation_id=conversation.id,
+            str_status="active",
+            audit_user_ip="127.0.0.1",
+            audit_user_login=user.username,
+        ),
+    ]
+
+    session.add_all(messages)
+    session.commit()
+    session.refresh(conversation)
+    return conversation
+
+
+@pytest.fixture
+def document(session, user):
+    """Create a test document."""
+    document = Document(
+        str_title="Documento de Teste",
+        str_filename="teste.txt",
+        txt_content="Este é um documento de teste para o sistema de RAG.",
+        str_content_type="text/plain",
+        json_metadata='{"source": "test", "category": "example"}',
+        int_size_bytes=50,
+        str_content_hash="abc123hash",
+        str_status="active",
+        audit_user_ip="127.0.0.1",
+        audit_user_login=user.username,
+    )
+    session.add(document)
+    session.commit()
+    session.refresh(document)
+    return document
+
+
+@pytest.fixture
+def multiple_conversations(session, user):
+    """Create multiple conversations for pagination testing."""
+    conversations = []
+    for i in range(15):
+        conversation = Conversation(
+            str_title=f"Conversa {i + 1}",
+            str_description=f"Descrição da conversa {i + 1}",
+            user_id=user.id,
+            str_status="active" if i % 2 == 0 else "archived",
+            audit_user_ip="127.0.0.1",
+            audit_user_login=user.username,
+        )
+        conversations.append(conversation)
+
+    session.add_all(conversations)
+    session.commit()
+    return conversations
+
+
+@pytest.fixture
+def multiple_documents(session, user):
+    """Create multiple documents for testing."""
+    documents = []
+    for i in range(10):
+        document = Document(
+            str_title=f"Documento {i + 1}",
+            str_filename=f"doc_{i + 1}.txt",
+            txt_content=f"Conteúdo do documento {i + 1} com informações importantes.",
+            str_content_type="text/plain",
+            json_metadata=f'{{"source": "test", "index": {i + 1}}}',
+            int_size_bytes=len(f"Conteúdo do documento {i + 1}"),
+            str_content_hash=f"hash{i + 1}",
+            str_status="active",
+            audit_user_ip="127.0.0.1",
+            audit_user_login=user.username,
+        )
+        documents.append(document)
+
+    session.add_all(documents)
+    session.commit()
+    return documents
