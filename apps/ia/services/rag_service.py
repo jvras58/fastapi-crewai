@@ -1,9 +1,11 @@
 """RAG (Retrieval Augmented Generation) Service using LangChain."""
 
+import logging
 import os
 from typing import Any
 from uuid import uuid4
 
+import numpy as np
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -12,6 +14,8 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr
 
 from apps.packpage.settings import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class RAGService:
@@ -31,31 +35,32 @@ class RAGService:
 
     def _setup_embeddings(self) -> Embeddings:
         """Setup Google Generative AI embeddings."""
-        # Para usar Google embeddings, precisamos configurar a chave da API
-        # Como alternativa, podemos usar embeddings locais ou outros providers
         try:
             api_key = os.getenv('GOOGLE_API_KEY')
             if not api_key:
+                logger.warning(
+                    "GOOGLE_API_KEY não configurada, usando embeddings simples"
+                )
                 raise ValueError('GOOGLE_API_KEY não configurada')
-            return GoogleGenerativeAIEmbeddings(
-                model='models/embedding-001', google_api_key=SecretStr(api_key)
-            )
-        except Exception:
-            # Fallback para embeddings simples se Google não estiver disponível
-            import numpy as np
 
+            return GoogleGenerativeAIEmbeddings(
+                model="models/embedding-001", google_api_key=SecretStr(api_key)
+            )
+        except Exception as e:
+            logger.warning(
+                f"Falha ao configurar Google embeddings: {str(e)}, "
+                "usando fallback simples"
+            )
+
+            # TODO: Refatorar testes para usar embeddings simples e não mocks
             class SimpleEmbeddings(Embeddings):
-                def embed_documents(
-                    self, texts: list[str]
-                ) -> list[list[float]]:
-                    # Embedding simples baseado em hash para desenvolvimento
+                def embed_documents(self, texts: list[str]) -> list[list[float]]:
                     return [self._simple_embed(text) for text in texts]
 
                 def embed_query(self, text: str) -> list[float]:
                     return self._simple_embed(text)
 
                 def _simple_embed(self, text: str) -> list[float]:
-                    # Embedding simples usando hash do texto
                     hash_val = hash(text.lower())
                     np.random.seed(abs(hash_val) % (2**31))
                     return np.random.normal(0, 1, 384).tolist()
@@ -66,30 +71,32 @@ class RAGService:
         self, texts: list[str], metadatas: list[dict[str, Any]] | None = None
     ) -> None:
         """Add documents to the RAG knowledge base."""
-        if metadatas is None:
-            metadatas = [{'source': f'doc_{uuid4()}'} for _ in texts]
+        try:
+            if metadatas is None:
+                metadatas = [{"source": f"doc_{uuid4()}"} for _ in texts]
 
-        # Create Document objects
-        documents = [
-            Document(page_content=text, metadata=metadata)
-            for text, metadata in zip(texts, metadatas, strict=True)
-        ]
+            documents = [
+                Document(page_content=text, metadata=metadata)
+                for text, metadata in zip(texts, metadatas, strict=True)
+            ]
 
-        # Split documents into chunks
-        chunked_docs = []
-        for doc in documents:
-            chunks = self.text_splitter.split_documents([doc])
-            chunked_docs.extend(chunks)
+            chunked_docs = []
+            for doc in documents:
+                chunks = self.text_splitter.split_documents([doc])
+                chunked_docs.extend(chunks)
 
-        self.documents.extend(chunked_docs)
+            self.documents.extend(chunked_docs)
 
-        # Update vector store
-        if self.vector_store is None:
-            self.vector_store = FAISS.from_documents(
-                chunked_docs, self.embeddings
+            if self.vector_store is None:
+                self.vector_store = FAISS.from_documents(chunked_docs, self.embeddings)
+            else:
+                self.vector_store.add_documents(chunked_docs)
+
+        except Exception as e:
+            logger.error(
+                f"Erro ao adicionar documentos ao RAG: {str(e)}", exc_info=True
             )
-        else:
-            self.vector_store.add_documents(chunked_docs)
+            raise
 
     def add_document_from_text(
         self, text: str, metadata: dict[str, Any] | None = None
@@ -124,16 +131,14 @@ class RAGService:
         current_tokens = 0
 
         for doc in docs:
-            # Estimativa simples de tokens (1 token ≈ 4 chars)
             doc_tokens = len(doc.page_content) // 4
 
             if current_tokens + doc_tokens <= max_tokens:
                 context_parts.append(doc.page_content)
                 current_tokens += doc_tokens
             else:
-                # Adicionar parte do documento que cabe no limite
                 remaining_chars = (max_tokens - current_tokens) * 4
-                if remaining_chars > 100:  # Só adiciona se for significativo
+                if remaining_chars > 100:
                     context_parts.append(doc.page_content[:remaining_chars])
                 break
 
