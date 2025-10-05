@@ -129,10 +129,10 @@ def test_create_conversation(client, token):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
 
-    assert data["title"] == "Nova Conversa via API"
-    assert data["description"] == "Conversa criada através da API"
+    assert data["str_title"] == "Nova Conversa via API"
+    assert data["str_description"] == "Conversa criada através da API"
     assert "id" in data
-    assert data["status"] == "active"
+    assert data["str_status"] == "active"
 
 
 def test_create_conversation_unauthorized(client):
@@ -253,9 +253,9 @@ def test_update_conversation(client, token, conversation):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
 
-    assert data["title"] == "Título Atualizado via API"
-    assert data["description"] == "Descrição atualizada"
-    assert data["status"] == "archived"
+    assert data["str_title"] == "Título Atualizado via API"
+    assert data["str_description"] == "Descrição atualizada"
+    assert data["str_status"] == "archived"
 
 
 def test_update_nonexistent_conversation(client, token):
@@ -386,5 +386,5 @@ def test_full_conversation_flow(mock_agent_class, client, token, user):
     )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["title"] == "Conversa Finalizada"
-    assert response.json()["status"] == "archived"
+    assert response.json()["str_title"] == "Conversa Finalizada"
+    assert response.json()["str_status"] == "archived"

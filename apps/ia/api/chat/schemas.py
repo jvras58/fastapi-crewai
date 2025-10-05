@@ -20,12 +20,12 @@ class MessageSchema(BaseAuditModelSchema):
     """Schema for message response."""
 
     id: int
-    content: str
-    role: str
+    txt_content: str
+    str_role: str
     conversation_id: int
-    created_at: datetime
-    metadata: dict[str, Any] | None = None
-    status: str
+    dt_created_at: datetime
+    json_metadata: dict[str, Any] | None = None
+    str_status: str
 
 
 class ConversationCreateSchema(BaseModel):
@@ -47,12 +47,12 @@ class ConversationSchema(BaseAuditModelSchema):
     """Schema for conversation response."""
 
     id: int
-    title: str
-    description: str | None
+    str_title: str
+    str_description: str | None
     user_id: int
-    started_at: datetime
-    last_message_at: datetime | None
-    status: str
+    dt_started_at: datetime
+    dt_last_message_at: datetime | None
+    str_status: str
     message_count: int | None = None
 
 
