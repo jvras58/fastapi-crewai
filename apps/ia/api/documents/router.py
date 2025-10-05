@@ -46,7 +46,7 @@ async def upload_document(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Erro ao fazer upload do documento',
+            detail=f"Erro ao fazer upload do documento: {str(e)}",
         ) from e
 
 
