@@ -8,12 +8,11 @@ from pydantic import BaseModel, Field
 from apps.packpage.base_schemas import BaseAuditModelSchema
 
 
-# Schemas para mensagens
 class MessageCreateSchema(BaseModel):
     """Schema for creating a new message."""
 
     content: str = Field(..., min_length=1, max_length=10000)
-    role: str = Field(..., pattern=r'^(user|assistant|system)$')
+    role: str = Field(..., pattern=r"^(user|assistant|system)$")
     metadata: dict[str, Any] | None = None
 
 
@@ -29,7 +28,6 @@ class MessageSchema(BaseAuditModelSchema):
     status: str
 
 
-# Schemas para conversas
 class ConversationCreateSchema(BaseModel):
     """Schema for creating a new conversation."""
 
@@ -64,7 +62,6 @@ class ConversationWithMessagesSchema(ConversationSchema):
     messages: list[MessageSchema] = []
 
 
-# Schemas para chat
 class ChatMessageSchema(BaseModel):
     """Schema for sending a chat message."""
 
@@ -82,7 +79,6 @@ class ChatResponseSchema(BaseModel):
     user_message_id: int
 
 
-# Schemas de lista
 class ConversationListSchema(BaseModel):
     """Schema for conversation list response."""
 
