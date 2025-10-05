@@ -33,26 +33,22 @@ class ChatController(GenericController):
 
     def save(self, db_session: Session, obj: Conversation) -> Conversation:
         """Save a new conversation with additional processing."""
-        # Definir valores padrão se não fornecidos
         if not obj.str_status:
             obj.str_status = "active"
 
         saved_conversation = super().save(db_session, obj)
 
-        # Lógica adicional específica de conversas pode ser adicionada aqui
-        # Por exemplo: notificações, logs, etc.
+        # TODO: Lógica específica antes da atualização (notificações, logs, etc.)
 
         return saved_conversation
 
     def update(self, db_session: Session, obj: Conversation) -> Conversation:
         """Update an existing conversation with additional processing."""
-        # Lógica específica antes da atualização
-        # Por exemplo: validações específicas, auditoria adicional, etc.
+        # TODO: Lógica específica antes da atualização (ex: validações, auditoria, etc.)
 
-        # Usar o método update do GenericController
         updated_conversation = super().update(db_session, obj)
 
-        # Lógica adicional após a atualização pode ser adicionada aqui
+        # TODO: Lógica adicional após a atualização
 
         return updated_conversation
 
@@ -77,7 +73,6 @@ class ChatController(GenericController):
     ) -> ChatResponseSchema:
         """Send a chat message and get AI response."""
 
-        # Encontrar ou criar conversa
         if chat_data.conversation_id:
             conversation = self.get_user_conversation(
                 session, chat_data.conversation_id, current_user.id
@@ -88,27 +83,22 @@ class ChatController(GenericController):
                     'Conversa não encontrada ou não pertence ao usuário'
                 )
         else:
-            # Criar nova conversa
             conversation = self._create_new_conversation(
                 session, current_user, request_ip, chat_data.message
             )
 
-        # Salvar mensagem do usuário
         user_message = self._save_user_message(
             session, conversation, chat_data.message, current_user, request_ip
         )
 
-        # Obter resposta da IA
         ai_response = self.conversation_agent.chat(
             chat_data.message, chat_data.context or ''
         )
 
-        # Salvar mensagem da IA
         ai_message = self._save_ai_message(
             session, conversation, ai_response, current_user, request_ip
         )
 
-        # Atualizar timestamp da última mensagem
         conversation.dt_last_message_at = datetime.now(UTC)
         session.commit()
 
@@ -123,7 +113,6 @@ class ChatController(GenericController):
         self, session: Session, user: User, request_ip: str, first_message: str
     ) -> Conversation:
         """Create a new conversation."""
-        # Gerar título baseado na primeira mensagem
         title = self._generate_conversation_title(first_message)
 
         conversation = Conversation(
@@ -136,20 +125,18 @@ class ChatController(GenericController):
         )
 
         session.add(conversation)
-        session.flush()  # Para obter o ID
+        session.flush()
         return conversation
 
     def _generate_conversation_title(self, message: str) -> str:
         """Generate a conversation title from the first message."""
-        # Pegar primeiras palavras da mensagem
         words = message.split()[:8]
         title = ' '.join(words)
 
-        # Limitar tamanho
         if len(title) > 50:
-            title = title[:47] + '...'
+            title = title[:47] + "..."
 
-        return title or 'Nova Conversa'
+        return title or "Nova Conversa"
 
     def _save_user_message(
         self,
@@ -162,9 +149,9 @@ class ChatController(GenericController):
         """Save user message to database."""
         message = Message(
             txt_content=content,
-            str_role='user',
+            str_role="user",
             conversation_id=conversation.id,
-            str_status='active',
+            str_status="active",
             audit_user_ip=request_ip,
             audit_user_login=user.username,
         )
@@ -184,9 +171,9 @@ class ChatController(GenericController):
         """Save AI response message to database."""
         message = Message(
             txt_content=content,
-            str_role='assistant',
+            str_role="assistant",
             conversation_id=conversation.id,
-            str_status='active',
+            str_status="active",
             audit_user_ip=request_ip,
             audit_user_login=user.username,
         )
@@ -207,7 +194,7 @@ class ChatController(GenericController):
             str_title=conversation_data.title,
             str_description=conversation_data.description,
             user_id=current_user.id,
-            str_status='active',
+            str_status="active",
             audit_user_ip=request_ip,
             audit_user_login=current_user.username,
         )
@@ -223,22 +210,20 @@ class ChatController(GenericController):
             .filter(
                 and_(
                     Conversation.user_id == user_id,
-                    Conversation.str_status.in_(['active', 'archived']),
+                    Conversation.str_status.in_(["active", "archived"]),
                 )
             )
             .order_by(Conversation.dt_last_message_at.desc())
         )
 
         total = query.count()
-        conversations = (
-            query.offset((page - 1) * per_page).limit(per_page).all()
-        )
+        conversations = query.offset((page - 1) * per_page).limit(per_page).all()
 
         return {
-            'conversations': conversations,
-            'total': total,
-            'page': page,
-            'per_page': per_page,
+            "conversations": conversations,
+            "total": total,
+            "page": page,
+            "per_page": per_page,
         }
 
     def get_conversation_with_messages(
@@ -259,11 +244,9 @@ class ChatController(GenericController):
         try:
             conversation = self.get(session, conversation_id)
 
-            # Verificar se a conversa pertence ao usuário
             if conversation.user_id != current_user.id:
                 return None
 
-            # Atualizar campos se fornecidos
             if conversation_data.title is not None:
                 conversation.str_title = conversation_data.title
             if conversation_data.description is not None:
@@ -271,7 +254,6 @@ class ChatController(GenericController):
             if conversation_data.status is not None:
                 conversation.str_status = conversation_data.status
 
-            # Atualizar auditoria
             conversation.audit_user_ip = request_ip
             conversation.audit_user_login = current_user.username
 
