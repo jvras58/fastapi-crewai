@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from apps.ia.agents.conversation_agent import SimpleConversationAgent
+from apps.ia.agents.conversation_agent import ConversationAgent
 from apps.ia.api.chat.controller import ChatController
 from apps.ia.api.chat.schemas import (
     ChatMessageSchema,
@@ -15,12 +15,15 @@ from apps.ia.models.conversation import Conversation
 from apps.ia.models.message import Message
 
 
-def test_simple_conversation_agent():
-    """Test simple conversation agent."""
-    agent = SimpleConversationAgent()
+def test_conversation_agent():
+    """Test conversation agent."""
+    from apps.ia.services.rag_service import RAGService
+
+    rag_service = RAGService()
+    agent = ConversationAgent(rag_service)
 
     try:
-        response = agent.chat('Olá, como você está?')
+        response = agent.process_query("Olá, como você está?")
         assert isinstance(response, str)
         print('Resposta do agente:', response)
         assert len(response) > 0
@@ -321,17 +324,20 @@ def test_message_model_roles():
 
 def test_conversation_agent_error_handling():
     """Test conversation agent error handling."""
-    agent = SimpleConversationAgent()
+    from apps.ia.services.rag_service import RAGService
+
+    rag_service = RAGService()
+    agent = ConversationAgent(rag_service)
 
     try:
-        response = agent.chat('')
+        response = agent.process_query("")
         assert isinstance(response, str)
     except Exception as e:
         pytest.skip(f'API handling error: {e}')
 
     try:
         long_message = 'a' * 10000
-        response = agent.chat(long_message)
+        response = agent.process_query(long_message)
         assert isinstance(response, str)
     except Exception as e:
         pytest.skip(f'API handling error: {e}')

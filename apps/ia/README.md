@@ -64,10 +64,12 @@ task migrate
 ### 1. Chat Simples
 
 ```python
-from apps.ia.agents.conversation_agent import SimpleConversationAgent
+from apps.ia.agents.conversation_agent import ConversationAgent
+from apps.ia.services.rag_service import RAGService
 
-agent = SimpleConversationAgent()
-response = agent.chat("Olá, como você está?")
+rag_service = RAGService()
+agent = ConversationAgent(rag_service)
+response = agent.process_query("Olá, como você está?")
 print(response)
 ```
 

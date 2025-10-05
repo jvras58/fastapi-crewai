@@ -1,9 +1,6 @@
 """AI clients integration module."""
 
-from apps.ia.agents.conversation_agent import (
-    ConversationAgent,
-    SimpleConversationAgent,
-)
+from apps.ia.agents.conversation_agent import ConversationAgent
 from apps.ia.services.rag_service import RAGService
 
 # Instância global do serviço RAG
@@ -28,6 +25,6 @@ def get_conversation_agent() -> ConversationAgent:
     return _global_conversation_agent
 
 
-def get_simple_agent() -> SimpleConversationAgent:
+def get_simple_agent() -> ConversationAgent:
     """Get simple conversation agent for basic interactions."""
-    return SimpleConversationAgent()
+    return get_conversation_agent()
