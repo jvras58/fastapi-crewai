@@ -96,9 +96,7 @@ class ChatController(GenericController):
             session, conversation, chat_data.message, current_user, request_ip
         )
 
-        ai_response = self.conversation_agent.chat(
-            chat_data.message, chat_data.context or ''
-        )
+        ai_response = self.conversation_agent.process_query(chat_data.message)
 
         ai_message = self._save_ai_message(
             session, conversation, ai_response, current_user, request_ip

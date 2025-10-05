@@ -137,7 +137,7 @@ def test_get_user_conversations_with_pagination(
 def test_send_message_new_conversation(mock_agent_class, session, user):
     """Test sending a message to create a new conversation."""
     mock_agent = Mock()
-    mock_agent.chat.return_value = 'Olá! Como posso ajudar você?'
+    mock_agent.process_query.return_value = "Olá! Como posso ajudar você?"
     mock_agent_class.return_value = mock_agent
 
     controller = ChatController()
@@ -166,7 +166,7 @@ def test_send_message_existing_conversation(
 ):
     """Test sending a message to an existing conversation."""
     mock_agent = Mock()
-    mock_agent.chat.return_value = 'Entendi sua pergunta!'
+    mock_agent.process_query.return_value = "Entendi sua pergunta!"
     mock_agent_class.return_value = mock_agent
 
     controller = ChatController()

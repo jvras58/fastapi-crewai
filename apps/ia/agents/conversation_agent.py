@@ -1,62 +1,66 @@
-"""Conversation Agent using CrewAI for intelligent chat interactions."""
+"""Conversation Agent using CrewAI."""
 
 from typing import Any
 
-from crewai import Agent, Crew, Task
+from crewai import Agent, Crew, Process, Task
 from langchain.schema import Document
 
 from apps.ia.services.rag_service import RAGService
-from apps.ia.tools.rag_search_tool import RAGSearchTool, rag_search_tool
+from apps.ia.tools.db_query_tool import db_query_tool
+from apps.ia.tools.rag_search_tool import rag_search_tool
 from apps.packpage.llm import get_llm
 
 
 class ConversationAgent:
-    """Agent for handling conversational interactions with RAG context."""
+    """Agent for handling conversations with RAG and DB support."""
 
-    def __init__(self, rag_service: RAGService | None = None):
-        """Initialize the conversation agent."""
-        self.llm = get_llm()
+    def __init__(self, rag_service: RAGService = None):
         self.rag_service = rag_service or RAGService()
-        self.rag_tool = RAGSearchTool(self.rag_service)
-        self._setup_agent()
+        self.llm = get_llm()
 
-    def _setup_agent(self) -> None:
-        """Setup the CrewAI agent with tools and configuration."""
-        self.agent = Agent(
-            role="Assistente Conversacional Inteligente",
-            goal="""Fornecer respostas precisas e úteis baseadas no conhecimento
-                    disponível e na conversa em andamento. Usar o contexto do RAG
-                    quando relevante para enriquecer as respostas.""",
-            backstory="""Você é um assistente AI especializado em conversação
-                        natural e busca de informações. Você tem acesso a uma
-                        base de conhecimento através de RAG (Retrieval Augmented
-                        Generation) e pode usar a ferramenta 'rag_search' para
-                        buscar informações relevantes nos documentos enviados.
-                        SEMPRE use a ferramenta rag_search quando o usuário fizer
-                        perguntas que possam estar relacionadas aos documentos
-                        da base de conhecimento.""",
-            # tools=[], -- Use this line to disable the RAG tool
-            tools=[rag_search_tool],
+    def create_conversation_agent(self) -> Agent:
+        """Create a conversation agent with tools."""
+        return Agent(
+            role="Agente de Conversa Inteligente",
+            goal="Responder perguntas usando DB, RAG ou conhecimento geral.",
+            backstory="Você é um assistente que decide a melhor fonte para responder.",
+            tools=[rag_search_tool, db_query_tool],
             llm=self.llm,
             verbose=True,
-            allow_delegation=False,
         )
 
-    def chat(self, message: str, context: str = '') -> str:
+    def process_query(self, query: str) -> str:
+        """Process a user query using the agent."""
+        agent = self.create_conversation_agent()
+
+        task = Task(
+            description=(
+                f"Analise a query: '{query}'. "
+                "Decida se usar DB (para dados estruturados), RAG (para documentos) "
+                "ou conhecimento geral. Responda de forma completa."
+            ),
+            agent=agent,
+            expected_output="Resposta final à query do usuário.",
+        )
+
+        crew = Crew(
+            agents=[agent],
+            tasks=[task],
+            process=Process.sequential,
+            verbose=2,
+        )
+
+        result = crew.kickoff()
+        return result
+
+    def chat(self, message: str, context: str = "") -> str:
         """Process a chat message and return a response."""
-        # Buscar contexto relevante no RAG
-        rag_context = self.rag_service.get_relevant_context(
-            message, max_tokens=1500
-        )
+        rag_context = self.rag_service.get_relevant_context(message, max_tokens=1500)
 
-        # Combinar contextos
         full_context = context
         if rag_context:
-            full_context += (
-                f'\n\nInformações da base de conhecimento:\n{rag_context}'
-            )
+            full_context += f"\n\nInformações da base de conhecimento:\n{rag_context}"
 
-        # Criar tarefa para o agent
         task = Task(
             description=f"""
             Processar a seguinte mensagem do usuário e fornecer uma resposta útil:
@@ -73,14 +77,15 @@ class ConversationAgent:
             6. Se não tiver informações suficientes, seja honesto sobre limitações
             7. Sempre cite as fontes quando usar informações da base de conhecimento
             """,
-            agent=self.agent,
+            agent=self.create_conversation_agent(),
             expected_output="""Uma resposta conversacional clara e útil que aborde
                             a pergunta do usuário, utilizando informações do contexto
                             quando relevantes.""",
         )
 
-        # Executar a tarefa
-        crew = Crew(agents=[self.agent], tasks=[task], verbose=True)
+        crew = Crew(
+            agents=[self.create_conversation_agent()], tasks=[task], verbose=True
+        )
 
         result = crew.kickoff()
         return str(result)
