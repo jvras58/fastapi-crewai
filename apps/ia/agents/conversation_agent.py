@@ -31,6 +31,9 @@ class ConversationAgent:
 
     def process_query(self, query: str) -> str:
         """Process a user query with single task to minimize API calls."""
+        if not query or not query.strip():
+            return "Por favor, faça uma pergunta para que eu possa ajudá-lo."
+
         agent = self.create_conversation_agent()
 
         task = Task(
@@ -53,10 +56,24 @@ class ConversationAgent:
 
         try:
             result = crew.kickoff()
+
+            if hasattr(result, "raw"):
+                response = str(result.raw).strip()
+            else:
+                response = str(result).strip()
+            if not response:
+                return (
+                    "Desculpe, não consegui processar sua pergunta. "
+                    "Pode tentar reformulá-la?"
+                )
+
+            return response
+
         except Exception as e:
             if "quota exceeded" in str(e).lower():
                 local_llm = get_llm(use_local_fallback=True)
                 result = local_llm(query)[0]["generated_text"]
+                return str(result).strip()
             else:
                 raise
 
