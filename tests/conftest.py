@@ -1,4 +1,7 @@
 """Fixture and environment configurations for testing."""
+import hashlib
+from unittest.mock import patch
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine, event
@@ -28,6 +31,7 @@ from tests.factory.authorization_factory import (
 from tests.factory.role_factory import RoleFactory
 from tests.factory.trasaction_factory import TransactonFactory
 from tests.factory.user_factory import UserFactory
+from tests.mock.mock_embeddings import MockEmbeddings
 
 
 @pytest.fixture
@@ -351,14 +355,17 @@ def conversation_with_messages(session, user):
 @pytest.fixture
 def document(session, user):
     """Create a test document."""
+    content = "Este é um documento de teste para o sistema de RAG."
+    content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+
     document = Document(
         str_title="Documento de Teste",
         str_filename="teste.txt",
-        txt_content="Este é um documento de teste para o sistema de RAG.",
+        txt_content=content,
         str_content_type="text/plain",
         json_metadata='{"source": "test", "category": "example"}',
-        int_size_bytes=50,
-        str_content_hash="abc123hash",
+        int_size_bytes=len(content.encode("utf-8")),
+        str_content_hash=content_hash,
         str_status="active",
         audit_user_ip="127.0.0.1",
         audit_user_login=user.username,
@@ -411,3 +418,13 @@ def multiple_documents(session, user):
     session.add_all(documents)
     session.commit()
     return documents
+
+
+@pytest.fixture
+def mock_rag_embeddings():
+    """Mock embeddings for RAG tests that don't call external APIs."""
+    with patch(
+        "apps.ia.services.rag_service.RAGService._setup_embeddings"
+    ) as mock_setup:
+        mock_setup.return_value = MockEmbeddings()
+        yield

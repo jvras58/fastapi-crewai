@@ -10,7 +10,7 @@ from apps.ia.models.document import Document
 from apps.ia.services.rag_service import RAGService
 
 
-def test_rag_service_basic_functionality():
+def test_rag_service_basic_functionality(mock_rag_embeddings):
     """Test basic RAG service functionality."""
     rag_service = RAGService()
 
@@ -26,7 +26,7 @@ def test_rag_service_basic_functionality():
     assert 'FastAPI' in results[0].page_content
 
 
-def test_rag_context_retrieval():
+def test_rag_context_retrieval(mock_rag_embeddings):
     """Test RAG context retrieval functionality."""
     rag_service = RAGService()
 
@@ -44,7 +44,7 @@ def test_rag_context_retrieval():
     assert len(context) > 0
 
 
-def test_rag_service_empty_state():
+def test_rag_service_empty_state(mock_rag_embeddings):
     """Test RAG service in empty state."""
     rag_service = RAGService()
 
@@ -54,7 +54,7 @@ def test_rag_service_empty_state():
     assert len(results) == 0
 
 
-def test_rag_service_multiple_documents():
+def test_rag_service_multiple_documents(mock_rag_embeddings):
     """Test RAG service with multiple documents."""
     rag_service = RAGService()
 
@@ -77,7 +77,7 @@ def test_rag_service_multiple_documents():
     assert framework_mentioned
 
 
-def test_rag_service_search_relevance():
+def test_rag_service_search_relevance(mock_rag_embeddings):
     """Test RAG service search relevance scoring."""
     rag_service = RAGService()
 
@@ -98,7 +98,7 @@ def test_rag_service_search_relevance():
     assert len(python_results) >= 2
 
 
-def test_rag_service_advanced_scenarios():
+def test_rag_service_advanced_scenarios(mock_rag_embeddings):
     """Test advanced RAG service scenarios."""
     rag_service = RAGService()
 
@@ -209,7 +209,8 @@ def test_upload_document_success(mock_rag_service, session, user):
     mock_rag.add_document_from_text.assert_called_once()
 
 
-def test_upload_duplicate_document(session, user, document):
+# @pytest.mark.usefixtures("mock_rag_embeddings")
+def test_upload_duplicate_document(session, user, document, mock_rag_embeddings):
     """Test uploading a duplicate document (same content hash)."""
     controller = DocController()
 
