@@ -221,15 +221,18 @@ def test_list_documents_pagination_limits(client, token, multiple_documents):
     assert data["per_page"] == 100
 
 
-@patch("apps.ia.api.documents.controller.RAGService")
-def test_search_knowledge_base_success(mock_rag_service, client, token):
+@patch("apps.ia.api.documents.router.doc_controller")
+def test_search_knowledge_base_success(mock_doc_controller, client, token):
     """Test successful knowledge base search."""
-    mock_rag = Mock()
-    mock_doc = Mock()
-    mock_doc.page_content = "FastAPI é um framework Python moderno"
-    mock_doc.metadata = {"source": "test_doc", "doc_id": 1}
-    mock_rag.similarity_search.return_value = [mock_doc]
-    mock_rag_service.return_value = mock_rag
+    # Mock the search result - controller returns a list of results
+    mock_search_results = [
+        {
+            "content": "FastAPI é um framework Python moderno",
+            "metadata": {"source": "test_doc", "doc_id": 1},
+        }
+    ]
+
+    mock_doc_controller.search_knowledge_base.return_value = mock_search_results
 
     response = client.get(
         "/ia/search?q=FastAPI&k=5", headers={"Authorization": f"Bearer {token}"}
