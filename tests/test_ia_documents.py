@@ -189,11 +189,11 @@ def test_upload_document_success(mock_rag_service, session, user):
     controller.rag_service = mock_rag
 
     document_data = DocumentUploadSchema(
-        title="Documento de Teste",
-        content="Este é o conteúdo do documento de teste para upload.",
-        content_type="text/plain",
-        filename="test.txt",
-        metadata={"source": "test", "category": "example"}
+        str_title="Documento de Teste",
+        txt_content="Este é o conteúdo do documento de teste para upload.",
+        str_content_type="text/plain",
+        str_filename="test.txt",
+        json_metadata={"source": "test", "category": "example"},
     )
 
     document = controller.upload_document(session, document_data, user, "127.0.0.1")
@@ -209,16 +209,16 @@ def test_upload_document_success(mock_rag_service, session, user):
     mock_rag.add_document_from_text.assert_called_once()
 
 
-# @pytest.mark.usefixtures("mock_rag_embeddings")
+
 def test_upload_duplicate_document(session, user, document, mock_rag_embeddings):
     """Test uploading a duplicate document (same content hash)."""
     controller = DocController()
 
     document_data = DocumentUploadSchema(
-        title="Documento Duplicado",
-        content="Este é um documento de teste para o sistema de RAG.",
-        content_type="text/plain",
-        filename="duplicate.txt"
+        str_title="Documento Duplicado",
+        txt_content="Este é um documento de teste para o sistema de RAG.",
+        str_content_type="text/plain",
+        str_filename="duplicate.txt",
     )
 
     with pytest.raises(ValueError, match="Documento com este conteúdo já existe"):

@@ -8,29 +8,30 @@ from pydantic import BaseModel, Field
 from apps.packpage.base_schemas import BaseAuditModelSchema
 
 
-# Schemas para documentos da base de conhecimento
 class DocumentUploadSchema(BaseModel):
     """Schema for uploading a document to knowledge base."""
 
-    title: str = Field(..., min_length=1, max_length=255)
-    content: str = Field(..., min_length=1)
-    content_type: str | None = Field(None, max_length=100)
-    filename: str | None = Field(None, max_length=255)
-    metadata: dict[str, Any] | None = None
+    str_title: str = Field(..., min_length=1, max_length=255)
+    txt_content: str = Field(..., min_length=1)
+    str_content_type: str | None = Field(None, max_length=100)
+    str_filename: str | None = Field(None, max_length=255)
+    json_metadata: dict[str, Any] | None = None
 
 
 class DocumentSchema(BaseAuditModelSchema):
     """Schema for document response."""
 
     id: int
-    title: str
-    filename: str | None
-    content_type: str | None
-    uploaded_at: datetime
-    processed_at: datetime | None
-    status: str
-    size_bytes: int | None
-    content_hash: str | None
+    str_title: str
+    str_filename: str | None
+    txt_content: str
+    str_content_type: str | None
+    json_metadata: str | None
+    str_status: str
+    dt_uploaded_at: datetime
+    dt_processed_at: datetime | None
+    int_size_bytes: int | None
+    str_content_hash: str | None
 
 
 class DocumentListSchema(BaseModel):

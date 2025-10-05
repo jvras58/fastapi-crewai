@@ -18,11 +18,16 @@ from apps.packpage.generic_controller import GenericController
 class DocController(GenericController):
     """Controller for chat operations."""
 
-    def __init__(self) -> None:
+    def __init__(self, rag_service: RAGService = None, init_agent: bool = True) -> None:
         """Initialize document controller."""
         super().__init__(Document)
-        self.rag_service = RAGService()
-        self.conversation_agent = ConversationAgent(self.rag_service)
+        self.rag_service = rag_service or RAGService()
+        self.conversation_agent = None
+        if init_agent:
+            try:
+                self.conversation_agent = ConversationAgent(self.rag_service)
+            except ValueError:
+                self.conversation_agent = None
 
     def upload_document(
         self,
@@ -33,7 +38,9 @@ class DocController(GenericController):
     ) -> Document:
         """Upload document to knowledge base."""
 
-        content_hash = hashlib.sha256(document_data.content.encode("utf-8")).hexdigest()
+        content_hash = hashlib.sha256(
+            document_data.txt_content.encode("utf-8")
+        ).hexdigest()
 
         existing_doc = (
             session.query(Document)
@@ -45,14 +52,16 @@ class DocController(GenericController):
             raise ValueError("Documento com este conteúdo já existe")
 
         document = Document(
-            str_title=document_data.title,
-            str_filename=document_data.filename,
-            txt_content=document_data.content,
-            str_content_type=document_data.content_type,
+            str_title=document_data.str_title,
+            str_filename=document_data.str_filename,
+            txt_content=document_data.txt_content,
+            str_content_type=document_data.str_content_type,
             json_metadata=(
-                json.dumps(document_data.metadata) if document_data.metadata else None
+                json.dumps(document_data.json_metadata)
+                if document_data.json_metadata
+                else None
             ),
-            int_size_bytes=len(document_data.content.encode("utf-8")),
+            int_size_bytes=len(document_data.txt_content.encode("utf-8")),
             str_content_hash=content_hash,
             str_status="active",
             audit_user_ip=request_ip,
@@ -62,7 +71,7 @@ class DocController(GenericController):
         session.add(document)
         session.commit()
 
-        metadata = document_data.metadata or {}
+        metadata = document_data.json_metadata or {}
         metadata.update(
             {
                 "doc_id": document.id,
@@ -71,7 +80,7 @@ class DocController(GenericController):
             }
         )
 
-        self.rag_service.add_document_from_text(document_data.content, metadata)
+        self.rag_service.add_document_from_text(document_data.txt_content, metadata)
 
         document.dt_processed_at = datetime.now(UTC)
         session.commit()
