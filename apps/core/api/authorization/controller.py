@@ -16,7 +16,7 @@ from apps.packpage.exceptions import (
 
 user_controller = UserController()
 
-
+# TODO: removed controller in add packpages
 def validate_transaction_access(
     db_session: Session, current_user: User, op_code: str
 ) -> None:
