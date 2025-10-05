@@ -33,10 +33,8 @@ class DocController(GenericController):
     ) -> Document:
         """Upload document to knowledge base."""
 
-        # Calcular hash do conteúdo
         content_hash = hashlib.sha256(document_data.content.encode("utf-8")).hexdigest()
 
-        # Verificar se documento já existe
         existing_doc = (
             session.query(Document)
             .filter(Document.str_content_hash == content_hash)
@@ -46,7 +44,6 @@ class DocController(GenericController):
         if existing_doc:
             raise ValueError("Documento com este conteúdo já existe")
 
-        # Criar documento
         document = Document(
             str_title=document_data.title,
             str_filename=document_data.filename,
@@ -65,7 +62,6 @@ class DocController(GenericController):
         session.add(document)
         session.commit()
 
-        # Adicionar ao RAG
         metadata = document_data.metadata or {}
         metadata.update(
             {
@@ -83,17 +79,24 @@ class DocController(GenericController):
         return document
 
     def get_documents(
-        self, session: Session, page: int = 1, per_page: int = 20
+        self, session: Session, page: int = 1, per_page: int = 20, **filters
     ) -> dict[str, Any]:
-        """Get documents with pagination."""
-        query = (
-            session.query(Document)
-            .filter(Document.str_status == 'active')
-            .order_by(Document.dt_uploaded_at.desc())
-        )
+        """Get documents with pagination using GenericController."""
+        skip = (page - 1) * per_page
 
-        total = query.count()
-        documents = query.offset((page - 1) * per_page).limit(per_page).all()
+        if "str_status" not in filters:
+            filters["str_status"] = "active"
+
+        documents = self.get_all(session, skip=skip, limit=per_page, **filters)
+
+        total_query = session.query(Document)
+        if filters:
+            for key, value in filters.items():
+                if hasattr(Document, key):
+                    field = getattr(Document, key)
+                    total_query = total_query.filter(field == value)
+
+        total = total_query.count()
 
         return {
             'documents': documents,
@@ -119,3 +122,70 @@ class DocController(GenericController):
             )
 
         return results
+
+    def get_document_by_id(self, session: Session, document_id: int) -> Document:
+        """Get a document by ID using GenericController."""
+        return self.get(session, document_id)
+
+    def delete_document(self, session: Session, document_id: int) -> None:
+        """Delete a document and remove from RAG index."""
+        document = self.get(session, document_id)
+
+        if document.dt_processed_at:
+            try:
+                document.str_status = "deleted"
+                session.commit()
+            except Exception:
+                pass
+
+        self.delete(session, document_id)
+
+    def update_document_status(
+        self, session: Session, document_id: int, status: str
+    ) -> Document:
+        """Update document status."""
+        document = self.get(session, document_id)
+        document.str_status = status
+
+        if status == "processed":
+            document.dt_processed_at = datetime.now(UTC)
+
+        return self.update(session, document)
+
+    def search_documents_by_content(
+        self, session: Session, search_term: str, limit: int = 10
+    ) -> list[Document]:
+        """Search documents by content using database search."""
+        return self.get_all(
+            session,
+            limit=limit,
+            txt_content=search_term,
+            str_status="active",
+        )
+
+    def get_documents_by_type(
+        self, session: Session, content_type: str, limit: int = 20
+    ) -> list[Document]:
+        """Get documents filtered by content type using GenericController."""
+        return self.get_all(
+            session, limit=limit, str_content_type=content_type, str_status="active"
+        )
+
+    def get_recent_documents(
+        self, session: Session, days: int = 7, limit: int = 10
+    ) -> list[Document]:
+        """Get recent documents - combining GenericController with custom queries."""
+        from datetime import timedelta
+
+        cutoff_date = datetime.now(UTC) - timedelta(days=days)
+
+        base_query = (
+            session.query(Document)
+            .filter(
+                Document.str_status == "active", Document.dt_uploaded_at >= cutoff_date
+            )
+            .order_by(Document.dt_uploaded_at.desc())
+            .limit(limit)
+        )
+
+        return list(base_query.all())
