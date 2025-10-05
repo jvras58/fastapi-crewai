@@ -10,8 +10,7 @@ from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from pydantic import SecretStr
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from apps.packpage.settings import get_settings
 
@@ -34,22 +33,17 @@ class RAGService:
         self.documents: list[Document] = []
 
     def _setup_embeddings(self) -> Embeddings:
-        """Setup Google Generative AI embeddings."""
+        """Setup local HuggingFace embeddings."""
         try:
-            api_key = os.getenv('GOOGLE_API_KEY')
-            if not api_key:
-                logger.warning(
-                    'GOOGLE_API_KEY não configurada, usando embeddings simples'
-                )
-                raise ValueError('GOOGLE_API_KEY não configurada')
-
-            return GoogleGenerativeAIEmbeddings(
-                model='models/embedding-001', google_api_key=SecretStr(api_key)
+            return HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-MiniLM-L6-v2",
+                model_kwargs={"device": "cpu"},
             )
         except Exception as e:
+            logger.error(f"Falha ao configurar embeddings locais: {str(e)}")
             logger.warning(
-                f'Falha ao configurar Google embeddings: {str(e)}, '
-                'usando fallback simples'
+                f"Falha ao configurar HuggingFace embeddings: {str(e)}, "
+                "usando fallback simples"
             )
 
             # TODO: Refatorar testes para usar embeddings simples e não mocks

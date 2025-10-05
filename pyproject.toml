@@ -7,10 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
     "bcrypt>=4.3.0",
-    "crewai>=0.186.1",
+    "crewai>=0.201.1",
     "fastapi>=0.116.1",
     "langchain>=0.3.27",
-    "langchain-google-genai>=2.1.10",
+    "langchain-huggingface>=0.1.0",
     "faiss-cpu>=1.8.0",
     "numpy>=1.24.0",
     "psycopg2-binary>=2.9.0",
@@ -23,6 +23,7 @@ dependencies = [
     "uvicorn>=0.35.0",
     "langchain-community>=0.3.30",
     "pymupdf>=1.26.4",
+    "sentence-transformers>=5.1.1",
 ]
 [tool.setuptools.packages.find]
 where = ["apps"]
@@ -36,6 +37,7 @@ dev = [
     "isort>=6.0.1",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
+    "pytest-env>=1.1.5",
     "ruff>=0.13.0",
     "taskipy>=1.14.1",
 ]
@@ -87,16 +89,26 @@ omit = [
     "*/venv/*",
     "*/.venv/*",
 ]
-# FIXME: omitido pois o pymupdf(importlib._bootstrap,SwigPyPacked, SwigPyObject e swigvarlink) gera issue fechada: https://github.com/pymupdf/PyMuPDF/issues/3931
-# FIXME: omitido pois o Pydantic está conflitando com o CrewAI/LangChain (https://github.com/langflow-ai/langflow/issues/7462)
+# NOTA: omitido pois o pymupdf(importlib._bootstrap,SwigPyPacked, SwigPyObject e swigvarlink) gera issue fechada: https://github.com/pymupdf/PyMuPDF/issues/3931
+# NOTA: omitido pois o Pydantic está conflitando com o CrewAI/LangChain (https://github.com/langflow-ai/langflow/issues/7462)
+# NOTA: CrewAI v0.201.1 tem um bug conhecido no Windows que causa "ValueError: I/O operation on closed file" durante pytest cleanup (não afeta funcionalidade)
 [tool.pytest.ini_options]
+env = [
+    "CREWAI_DISABLE_TRACING=true",
+    "CREWAI_LOG_LEVEL=ERROR",
+    "OTEL_SDK_DISABLED=true",
+    "PYTHONDONTWRITEBYTECODE=1"
+]
+addopts = "--tb=short --disable-warnings"
 filterwarnings = [
     "ignore::DeprecationWarning:importlib._bootstrap",
     "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
     "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning", 
     "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
     "ignore:Pydantic serializer warnings:UserWarning",
-    "ignore:Expected.*fields but got.*Expected.*Message.*serialized value may not be as expected:UserWarning"
+    "ignore:Expected.*fields but got.*Expected.*Message.*serialized value may not be as expected:UserWarning",
+    "ignore:Exception in thread.*get_input:pytest.PytestUnhandledThreadExceptionWarning",
+    "ignore::pytest.PytestUnhandledThreadExceptionWarning"
 ]
 
 [tool.coverage.report]
