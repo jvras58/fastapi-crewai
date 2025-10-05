@@ -19,10 +19,11 @@ from apps.packpage.client_ip import get_client_ip
 router = APIRouter()
 doc_controller = DocController()
 
-# Dependency types
+
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
+# TODO: implements Validations and Permissions com o (validate_transaction_access)
 @router.post('/documents', response_model=DocumentSchema)
 async def upload_document(
     request: Request,

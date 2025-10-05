@@ -26,7 +26,7 @@ DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 ChatControllerDep = Annotated[ChatController, Depends(lambda: ChatController())]
 
-
+# TODO: implements Validations and Permissions com o (validate_transaction_access)
 @router.post("/chat", response_model=ChatResponseSchema)
 async def send_chat_message(
     request: Request,
