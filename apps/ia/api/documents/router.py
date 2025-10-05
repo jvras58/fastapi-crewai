@@ -46,7 +46,7 @@ async def upload_document(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao fazer upload do documento: {str(e)}",
+            detail=f'Erro ao fazer upload do documento: {str(e)}',
         ) from e
 
 
@@ -67,17 +67,17 @@ async def list_documents(
     # Build dynamic filters
     filters = {}
     if status:
-        filters["str_status"] = status
+        filters['str_status'] = status
     if title:
-        filters["str_title"] = title
+        filters['str_title'] = title
     if content_type:
-        filters["str_content_type"] = content_type
+        filters['str_content_type'] = content_type
 
     result = doc_controller.get_documents(session, page, per_page, **filters)
     return result
 
 
-@router.get("/documents/{document_id}", response_model=DocumentSchema)
+@router.get('/documents/{document_id}', response_model=DocumentSchema)
 async def get_document(
     document_id: int,
     session: DbSession,
@@ -90,11 +90,11 @@ async def get_document(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Documento não encontrado",
+            detail='Documento não encontrado',
         ) from e
 
 
-@router.delete("/documents/{document_id}")
+@router.delete('/documents/{document_id}')
 async def delete_document(
     document_id: int,
     session: DbSession,
@@ -103,15 +103,15 @@ async def delete_document(
     """Delete a document from the knowledge base."""
     try:
         doc_controller.delete_document(session, document_id)
-        return {"message": "Documento deletado com sucesso"}
+        return {'message': 'Documento deletado com sucesso'}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Documento não encontrado",
+            detail='Documento não encontrado',
         ) from e
 
 
-@router.patch("/documents/{document_id}/status")
+@router.patch('/documents/{document_id}/status')
 async def update_document_status(
     document_id: int,
     status: str,
@@ -119,19 +119,21 @@ async def update_document_status(
     current_user: CurrentUser,
 ):
     """Update document status."""
-    if status not in ["active", "processed", "deleted"]:
+    if status not in ['active', 'processed', 'deleted']:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Status deve ser: active, processed ou deleted",
+            detail='Status deve ser: active, processed ou deleted',
         )
 
     try:
-        document = doc_controller.update_document_status(session, document_id, status)
+        document = doc_controller.update_document_status(
+            session, document_id, status
+        )
         return document
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Documento não encontrado",
+            detail='Documento não encontrado',
         ) from e
 
 
@@ -151,7 +153,7 @@ async def search_knowledge_base(q: str, current_user: CurrentUser, k: int = 5):
         ) from e
 
 
-@router.get("/documents/search/content")
+@router.get('/documents/search/content')
 async def search_documents_content(
     q: str,
     session: DbSession,
@@ -163,10 +165,12 @@ async def search_documents_content(
         limit = 50
 
     try:
-        documents = doc_controller.search_documents_by_content(session, q, limit)
-        return {"query": q, "documents": documents, "count": len(documents)}
+        documents = doc_controller.search_documents_by_content(
+            session, q, limit
+        )
+        return {'query': q, 'documents': documents, 'count': len(documents)}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro na busca de documentos",
+            detail='Erro na busca de documentos',
         ) from e

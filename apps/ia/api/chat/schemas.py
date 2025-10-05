@@ -12,7 +12,7 @@ class MessageCreateSchema(BaseModel):
     """Schema for creating a new message."""
 
     content: str = Field(..., min_length=1, max_length=10000)
-    role: str = Field(..., pattern=r"^(user|assistant|system)$")
+    role: str = Field(..., pattern=r'^(user|assistant|system)$')
     metadata: dict[str, Any] | None = None
 
 

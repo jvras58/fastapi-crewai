@@ -6,7 +6,7 @@ from crewai import Agent, Crew, Task
 from langchain.schema import Document
 
 from apps.ia.services.rag_service import RAGService
-from apps.ia.tools.rag_search_tool import RAGSearchTool
+from apps.ia.tools.rag_search_tool import RAGSearchTool, rag_search_tool
 from apps.packpage.llm import get_llm
 
 
@@ -23,16 +23,20 @@ class ConversationAgent:
     def _setup_agent(self) -> None:
         """Setup the CrewAI agent with tools and configuration."""
         self.agent = Agent(
-            role='Assistente Conversacional Inteligente',
+            role="Assistente Conversacional Inteligente",
             goal="""Fornecer respostas precisas e úteis baseadas no conhecimento
                     disponível e na conversa em andamento. Usar o contexto do RAG
                     quando relevante para enriquecer as respostas.""",
             backstory="""Você é um assistente AI especializado em conversação
                         natural e busca de informações. Você tem acesso a uma
                         base de conhecimento através de RAG (Retrieval Augmented
-                        Generation) e pode usar essas informações para fornecer
-                        respostas mais precisas e contextualizadas.""",
-            tools=[],
+                        Generation) e pode usar a ferramenta 'rag_search' para
+                        buscar informações relevantes nos documentos enviados.
+                        SEMPRE use a ferramenta rag_search quando o usuário fizer
+                        perguntas que possam estar relacionadas aos documentos
+                        da base de conhecimento.""",
+            # tools=[], -- Use this line to disable the RAG tool
+            tools=[rag_search_tool],
             llm=self.llm,
             verbose=True,
             allow_delegation=False,
@@ -60,10 +64,14 @@ class ConversationAgent:
             Contexto disponível: {full_context}
             Instruções:
             1. Analise a mensagem do usuário
-            2. Use as informações do contexto quando relevantes
-            3. Forneça uma resposta clara, útil e baseada em evidências
-            4. Mantenha um tom conversacional e amigável
-            5. Se não tiver informações suficientes, seja honesto sobre limitações
+            2. Se a pergunta puder estar relacionada a documentos ou informações
+               específicas, USE A FERRAMENTA 'rag_search' para buscar informações
+               relevantes na base de conhecimento
+            3. Use as informações do contexto e dos resultados do rag_search
+            4. Forneça uma resposta clara, útil e baseada em evidências
+            5. Mantenha um tom conversacional e amigável
+            6. Se não tiver informações suficientes, seja honesto sobre limitações
+            7. Sempre cite as fontes quando usar informações da base de conhecimento
             """,
             agent=self.agent,
             expected_output="""Uma resposta conversacional clara e útil que aborde

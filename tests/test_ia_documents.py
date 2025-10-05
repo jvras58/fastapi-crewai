@@ -39,8 +39,8 @@ def test_rag_context_retrieval(mock_rag_embeddings):
     for i, doc in enumerate(test_docs):
         rag_service.add_document_from_text(doc, {'source': f'doc_{i}'})
 
-    context = rag_service.get_relevant_context("Python", max_tokens=100)
-    assert "Python" in context
+    context = rag_service.get_relevant_context('Python', max_tokens=100)
+    assert 'Python' in context
     assert len(context) > 0
 
 
@@ -73,7 +73,9 @@ def test_rag_service_multiple_documents(mock_rag_embeddings):
     results = rag_service.similarity_search('framework', k=2)
     assert len(results) > 0
 
-    framework_mentioned = any('FastAPI' in result.page_content for result in results)
+    framework_mentioned = any(
+        'FastAPI' in result.page_content for result in results
+    )
     assert framework_mentioned
 
 
@@ -88,7 +90,9 @@ def test_rag_service_search_relevance(mock_rag_embeddings):
     ]
 
     for i, doc in enumerate(docs):
-        rag_service.add_document_from_text(doc, {'source': f'relevance_doc_{i}'})
+        rag_service.add_document_from_text(
+            doc, {'source': f'relevance_doc_{i}'}
+        )
 
     results = rag_service.similarity_search('Python framework', k=3)
 
@@ -117,6 +121,7 @@ def test_rag_service_advanced_scenarios(mock_rag_embeddings):
 
     results = rag_service.similarity_search('FastAPI Python', k=3)
     assert len(results) == 3
+
 
 def test_document_model_creation():
     """Test document model creation."""
@@ -189,40 +194,45 @@ def test_upload_document_success(mock_rag_service, session, user):
     controller.rag_service = mock_rag
 
     document_data = DocumentUploadSchema(
-        str_title="Documento de Teste",
-        txt_content="Este é o conteúdo do documento de teste para upload.",
-        str_content_type="text/plain",
-        str_filename="test.txt",
-        json_metadata={"source": "test", "category": "example"},
+        str_title='Documento de Teste',
+        txt_content='Este é o conteúdo do documento de teste para upload.',
+        str_content_type='text/plain',
+        str_filename='test.txt',
+        json_metadata={'source': 'test', 'category': 'example'},
     )
 
-    document = controller.upload_document(session, document_data, user, "127.0.0.1")
+    document = controller.upload_document(
+        session, document_data, user, '127.0.0.1'
+    )
 
     assert document.id is not None
-    assert document.str_title == "Documento de Teste"
-    assert document.str_filename == "test.txt"
-    assert document.str_content_type == "text/plain"
-    assert document.str_status == "active"
+    assert document.str_title == 'Documento de Teste'
+    assert document.str_filename == 'test.txt'
+    assert document.str_content_type == 'text/plain'
+    assert document.str_status == 'active'
     assert document.int_size_bytes > 0
     assert document.str_content_hash is not None
 
     mock_rag.add_document_from_text.assert_called_once()
 
 
-
-def test_upload_duplicate_document(session, user, document, mock_rag_embeddings):
+def test_upload_duplicate_document(
+    session, user, document, mock_rag_embeddings
+):
     """Test uploading a duplicate document (same content hash)."""
     controller = DocController()
 
     document_data = DocumentUploadSchema(
-        str_title="Documento Duplicado",
-        txt_content="Este é um documento de teste para o sistema de RAG.",
-        str_content_type="text/plain",
-        str_filename="duplicate.txt",
+        str_title='Documento Duplicado',
+        txt_content='Este é um documento de teste para o sistema de RAG.',
+        str_content_type='text/plain',
+        str_filename='duplicate.txt',
     )
 
-    with pytest.raises(ValueError, match="Documento com este conteúdo já existe"):
-        controller.upload_document(session, document_data, user, "127.0.0.1")
+    with pytest.raises(
+        ValueError, match='Documento com este conteúdo já existe'
+    ):
+        controller.upload_document(session, document_data, user, '127.0.0.1')
 
 
 def test_get_documents_pagination(session, multiple_documents):
@@ -251,27 +261,27 @@ def test_search_knowledge_base(mock_rag_service):
     """Test knowledge base search functionality."""
     mock_rag = Mock()
     mock_doc = Mock()
-    mock_doc.page_content = "FastAPI é um framework Python"
-    mock_doc.metadata = {"source": "test_doc", "doc_id": 1}
+    mock_doc.page_content = 'FastAPI é um framework Python'
+    mock_doc.metadata = {'source': 'test_doc', 'doc_id': 1}
     mock_rag.similarity_search.return_value = [mock_doc]
     mock_rag_service.return_value = mock_rag
 
     controller = DocController()
     controller.rag_service = mock_rag
 
-    results = controller.search_knowledge_base("FastAPI", k=5)
+    results = controller.search_knowledge_base('FastAPI', k=5)
 
     assert len(results) == 1
-    assert results[0]['content'] == "FastAPI é um framework Python"
-    assert results[0]['metadata']['source'] == "test_doc"
-    assert results[0]['source'] == "test_doc"
+    assert results[0]['content'] == 'FastAPI é um framework Python'
+    assert results[0]['metadata']['source'] == 'test_doc'
+    assert results[0]['source'] == 'test_doc'
 
-    mock_rag.similarity_search.assert_called_once_with("FastAPI", k=5)
+    mock_rag.similarity_search.assert_called_once_with('FastAPI', k=5)
 
 
 def test_search_knowledge_base_empty_results():
     """Test knowledge base search with no results."""
     controller = DocController()
 
-    results = controller.search_knowledge_base("nonexistent", k=5)
+    results = controller.search_knowledge_base('nonexistent', k=5)
     assert len(results) == 0

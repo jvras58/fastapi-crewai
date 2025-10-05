@@ -23,7 +23,9 @@ from apps.packpage.generic_controller import GenericController
 class ChatController(GenericController):
     """Controller for chat operations."""
 
-    def __init__(self, conversation_agent: ConversationAgent | None = None) -> None:
+    def __init__(
+        self, conversation_agent: ConversationAgent | None = None
+    ) -> None:
         """Initialize chat controller."""
         super().__init__(Conversation)
         if conversation_agent is None:
@@ -34,7 +36,7 @@ class ChatController(GenericController):
     def save(self, db_session: Session, obj: Conversation) -> Conversation:
         """Save a new conversation with additional processing."""
         if not obj.str_status:
-            obj.str_status = "active"
+            obj.str_status = 'active'
 
         saved_conversation = super().save(db_session, obj)
 
@@ -58,7 +60,10 @@ class ChatController(GenericController):
         """Get a specific conversation for a user."""
         try:
             conversation = self.get(session, conversation_id)
-            if conversation.user_id != user_id or conversation.str_status == "deleted":
+            if (
+                conversation.user_id != user_id
+                or conversation.str_status == 'deleted'
+            ):
                 return None
             return conversation
         except Exception:
@@ -78,7 +83,7 @@ class ChatController(GenericController):
                 session, chat_data.conversation_id, current_user.id
             )
 
-            if not conversation or conversation.str_status != "active":
+            if not conversation or conversation.str_status != 'active':
                 raise ValueError(
                     'Conversa não encontrada ou não pertence ao usuário'
                 )
@@ -134,9 +139,9 @@ class ChatController(GenericController):
         title = ' '.join(words)
 
         if len(title) > 50:
-            title = title[:47] + "..."
+            title = title[:47] + '...'
 
-        return title or "Nova Conversa"
+        return title or 'Nova Conversa'
 
     def _save_user_message(
         self,
@@ -149,9 +154,9 @@ class ChatController(GenericController):
         """Save user message to database."""
         message = Message(
             txt_content=content,
-            str_role="user",
+            str_role='user',
             conversation_id=conversation.id,
-            str_status="active",
+            str_status='active',
             audit_user_ip=request_ip,
             audit_user_login=user.username,
         )
@@ -171,9 +176,9 @@ class ChatController(GenericController):
         """Save AI response message to database."""
         message = Message(
             txt_content=content,
-            str_role="assistant",
+            str_role='assistant',
             conversation_id=conversation.id,
-            str_status="active",
+            str_status='active',
             audit_user_ip=request_ip,
             audit_user_login=user.username,
         )
@@ -194,7 +199,7 @@ class ChatController(GenericController):
             str_title=conversation_data.title,
             str_description=conversation_data.description,
             user_id=current_user.id,
-            str_status="active",
+            str_status='active',
             audit_user_ip=request_ip,
             audit_user_login=current_user.username,
         )
@@ -210,20 +215,22 @@ class ChatController(GenericController):
             .filter(
                 and_(
                     Conversation.user_id == user_id,
-                    Conversation.str_status.in_(["active", "archived"]),
+                    Conversation.str_status.in_(['active', 'archived']),
                 )
             )
             .order_by(Conversation.dt_last_message_at.desc())
         )
 
         total = query.count()
-        conversations = query.offset((page - 1) * per_page).limit(per_page).all()
+        conversations = (
+            query.offset((page - 1) * per_page).limit(per_page).all()
+        )
 
         return {
-            "conversations": conversations,
-            "total": total,
-            "page": page,
-            "per_page": per_page,
+            'conversations': conversations,
+            'total': total,
+            'page': page,
+            'per_page': per_page,
         }
 
     def get_conversation_with_messages(

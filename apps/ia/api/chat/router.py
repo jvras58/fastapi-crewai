@@ -24,10 +24,12 @@ router = APIRouter()
 
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
-ChatControllerDep = Annotated[ChatController, Depends(lambda: ChatController())]
+ChatControllerDep = Annotated[
+    ChatController, Depends(lambda: ChatController())
+]
 
 # TODO: implements Validations and Permissions com o (validate_transaction_access)
-@router.post("/chat", response_model=ChatResponseSchema)
+@router.post('/chat', response_model=ChatResponseSchema)
 async def send_chat_message(
     request: Request,
     chat_data: ChatMessageSchema,
@@ -39,7 +41,9 @@ async def send_chat_message(
     client_ip = get_client_ip(request)
 
     try:
-        return chat_controller.send_message(session, chat_data, current_user, client_ip)
+        return chat_controller.send_message(
+            session, chat_data, current_user, client_ip
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
@@ -47,11 +51,11 @@ async def send_chat_message(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro interno do servidor",
+            detail='Erro interno do servidor',
         ) from e
 
 
-@router.post("/conversations", response_model=ConversationSchema)
+@router.post('/conversations', response_model=ConversationSchema)
 async def create_conversation(
     request: Request,
     conversation_data: ConversationCreateSchema,
@@ -68,7 +72,7 @@ async def create_conversation(
     return conversation
 
 
-@router.get("/conversations", response_model=ConversationListSchema)
+@router.get('/conversations', response_model=ConversationListSchema)
 async def list_conversations(
     session: DbSession,
     current_user: CurrentUser,
@@ -87,7 +91,7 @@ async def list_conversations(
 
 
 @router.get(
-    "/conversations/{conversation_id}",
+    '/conversations/{conversation_id}',
     response_model=ConversationWithMessagesSchema,
 )
 async def get_conversation(
@@ -104,13 +108,15 @@ async def get_conversation(
     if not conversation:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Conversa não encontrada",
+            detail='Conversa não encontrada',
         )
 
     return conversation
 
 
-@router.put("/conversations/{conversation_id}", response_model=ConversationSchema)
+@router.put(
+    '/conversations/{conversation_id}', response_model=ConversationSchema
+)
 async def update_conversation(
     request: Request,
     conversation_id: int,
@@ -129,7 +135,7 @@ async def update_conversation(
     if not conversation:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Conversa não encontrada",
+            detail='Conversa não encontrada',
         )
 
     return conversation

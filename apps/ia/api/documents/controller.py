@@ -18,7 +18,9 @@ from apps.packpage.generic_controller import GenericController
 class DocController(GenericController):
     """Controller for chat operations."""
 
-    def __init__(self, rag_service: RAGService = None, init_agent: bool = True) -> None:
+    def __init__(
+        self, rag_service: RAGService = None, init_agent: bool = True
+    ) -> None:
         """Initialize document controller."""
         super().__init__(Document)
         self.rag_service = rag_service or RAGService()
@@ -39,7 +41,7 @@ class DocController(GenericController):
         """Upload document to knowledge base."""
 
         content_hash = hashlib.sha256(
-            document_data.txt_content.encode("utf-8")
+            document_data.txt_content.encode('utf-8')
         ).hexdigest()
 
         existing_doc = (
@@ -49,7 +51,7 @@ class DocController(GenericController):
         )
 
         if existing_doc:
-            raise ValueError("Documento com este conteúdo já existe")
+            raise ValueError('Documento com este conteúdo já existe')
 
         document = Document(
             str_title=document_data.str_title,
@@ -61,9 +63,9 @@ class DocController(GenericController):
                 if document_data.json_metadata
                 else None
             ),
-            int_size_bytes=len(document_data.txt_content.encode("utf-8")),
+            int_size_bytes=len(document_data.txt_content.encode('utf-8')),
             str_content_hash=content_hash,
-            str_status="active",
+            str_status='active',
             audit_user_ip=request_ip,
             audit_user_login=current_user.username,
         )
@@ -74,13 +76,15 @@ class DocController(GenericController):
         metadata = document_data.json_metadata or {}
         metadata.update(
             {
-                "doc_id": document.id,
-                "title": document.str_title,
-                "source": f"document_{document.id}",
+                'doc_id': document.id,
+                'title': document.str_title,
+                'source': f'document_{document.id}',
             }
         )
 
-        self.rag_service.add_document_from_text(document_data.txt_content, metadata)
+        self.rag_service.add_document_from_text(
+            document_data.txt_content, metadata
+        )
 
         document.dt_processed_at = datetime.now(UTC)
         session.commit()
@@ -93,8 +97,8 @@ class DocController(GenericController):
         """Get documents with pagination using GenericController."""
         skip = (page - 1) * per_page
 
-        if "str_status" not in filters:
-            filters["str_status"] = "active"
+        if 'str_status' not in filters:
+            filters['str_status'] = 'active'
 
         documents = self.get_all(session, skip=skip, limit=per_page, **filters)
 
@@ -132,7 +136,9 @@ class DocController(GenericController):
 
         return results
 
-    def get_document_by_id(self, session: Session, document_id: int) -> Document:
+    def get_document_by_id(
+        self, session: Session, document_id: int
+    ) -> Document:
         """Get a document by ID using GenericController."""
         return self.get(session, document_id)
 
@@ -142,7 +148,7 @@ class DocController(GenericController):
 
         if document.dt_processed_at:
             try:
-                document.str_status = "deleted"
+                document.str_status = 'deleted'
                 session.commit()
             except Exception:
                 pass
@@ -156,7 +162,7 @@ class DocController(GenericController):
         document = self.get(session, document_id)
         document.str_status = status
 
-        if status == "processed":
+        if status == 'processed':
             document.dt_processed_at = datetime.now(UTC)
 
         return self.update(session, document)
@@ -169,7 +175,7 @@ class DocController(GenericController):
             session,
             limit=limit,
             txt_content=search_term,
-            str_status="active",
+            str_status='active',
         )
 
     def get_documents_by_type(
@@ -177,7 +183,10 @@ class DocController(GenericController):
     ) -> list[Document]:
         """Get documents filtered by content type using GenericController."""
         return self.get_all(
-            session, limit=limit, str_content_type=content_type, str_status="active"
+            session,
+            limit=limit,
+            str_content_type=content_type,
+            str_status='active',
         )
 
     def get_recent_documents(
@@ -191,7 +200,8 @@ class DocController(GenericController):
         base_query = (
             session.query(Document)
             .filter(
-                Document.str_status == "active", Document.dt_uploaded_at >= cutoff_date
+                Document.str_status == 'active',
+                Document.dt_uploaded_at >= cutoff_date,
             )
             .order_by(Document.dt_uploaded_at.desc())
             .limit(limit)

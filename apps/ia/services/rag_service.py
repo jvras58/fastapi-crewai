@@ -39,22 +39,24 @@ class RAGService:
             api_key = os.getenv('GOOGLE_API_KEY')
             if not api_key:
                 logger.warning(
-                    "GOOGLE_API_KEY não configurada, usando embeddings simples"
+                    'GOOGLE_API_KEY não configurada, usando embeddings simples'
                 )
                 raise ValueError('GOOGLE_API_KEY não configurada')
 
             return GoogleGenerativeAIEmbeddings(
-                model="models/embedding-001", google_api_key=SecretStr(api_key)
+                model='models/embedding-001', google_api_key=SecretStr(api_key)
             )
         except Exception as e:
             logger.warning(
-                f"Falha ao configurar Google embeddings: {str(e)}, "
-                "usando fallback simples"
+                f'Falha ao configurar Google embeddings: {str(e)}, '
+                'usando fallback simples'
             )
 
             # TODO: Refatorar testes para usar embeddings simples e não mocks
             class SimpleEmbeddings(Embeddings):
-                def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                def embed_documents(
+                    self, texts: list[str]
+                ) -> list[list[float]]:
                     return [self._simple_embed(text) for text in texts]
 
                 def embed_query(self, text: str) -> list[float]:
@@ -73,7 +75,7 @@ class RAGService:
         """Add documents to the RAG knowledge base."""
         try:
             if metadatas is None:
-                metadatas = [{"source": f"doc_{uuid4()}"} for _ in texts]
+                metadatas = [{'source': f'doc_{uuid4()}'} for _ in texts]
 
             documents = [
                 Document(page_content=text, metadata=metadata)
@@ -88,13 +90,15 @@ class RAGService:
             self.documents.extend(chunked_docs)
 
             if self.vector_store is None:
-                self.vector_store = FAISS.from_documents(chunked_docs, self.embeddings)
+                self.vector_store = FAISS.from_documents(
+                    chunked_docs, self.embeddings
+                )
             else:
                 self.vector_store.add_documents(chunked_docs)
 
         except Exception as e:
             logger.error(
-                f"Erro ao adicionar documentos ao RAG: {str(e)}", exc_info=True
+                f'Erro ao adicionar documentos ao RAG: {str(e)}', exc_info=True
             )
             raise
 
