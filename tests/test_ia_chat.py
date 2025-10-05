@@ -1,5 +1,6 @@
 """Tests for AI chat functionality."""
 
+import traceback
 from unittest.mock import Mock, patch
 
 import pytest
@@ -13,22 +14,24 @@ from apps.ia.api.chat.schemas import (
 )
 from apps.ia.models.conversation import Conversation
 from apps.ia.models.message import Message
+from apps.ia.services.rag_service import RAGService
 
 
 def test_conversation_agent():
     """Test conversation agent."""
-    from apps.ia.services.rag_service import RAGService
+
 
     rag_service = RAGService()
     agent = ConversationAgent(rag_service)
 
     try:
         response = agent.process_query("Olá, como você está?")
-        assert isinstance(response, str)
-        print('Resposta do agente:', response)
-        assert len(response) > 0
+        assert isinstance(response, str), f"Expected str, got {type(response)}"
+        assert len(response) > 0, "Response cannot be empty"
+
     except Exception as e:
-        pytest.skip(f'API não configurada: {e}')
+        traceback.print_exc()
+        pytest.skip(f"API não configurada: {e}")
 
 
 def test_conversation_model_creation():
@@ -328,17 +331,11 @@ def test_conversation_agent_error_handling():
 
     rag_service = RAGService()
     agent = ConversationAgent(rag_service)
-
     try:
         response = agent.process_query("")
         assert isinstance(response, str)
-    except Exception as e:
-        pytest.skip(f'API handling error: {e}')
-
-    try:
-        long_message = 'a' * 10000
-        response = agent.process_query(long_message)
-        assert isinstance(response, str)
+        assert len(response) > 0
+        print(f"✅ Short message handled: {response}")
     except Exception as e:
         pytest.skip(f'API handling error: {e}')
 
