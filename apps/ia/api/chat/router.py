@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from apps.core.api.authentication.controller import get_current_user
+from apps.core.api.transaction.enum_operation_code import (
+    EnumOperationCode as op,
+)
 from apps.core.database.session import get_session
 from apps.core.models.user import User
 from apps.ia.api.chat.controller import ChatController
@@ -19,6 +22,7 @@ from apps.ia.api.chat.schemas import (
     ConversationWithMessagesSchema,
 )
 from apps.packpage.client_ip import get_client_ip
+from apps.packpage.validate_transaction_acess import validate_transaction_access
 
 router = APIRouter()
 
@@ -28,7 +32,6 @@ ChatControllerDep = Annotated[
     ChatController, Depends(lambda: ChatController())
 ]
 
-# TODO: implements Validations and Permissions com o (validate_transaction_access)
 @router.post('/chat', response_model=ChatResponseSchema)
 async def send_chat_message(
     request: Request,
@@ -38,6 +41,8 @@ async def send_chat_message(
     chat_controller: ChatControllerDep,
 ):
     """Send a chat message and get AI response."""
+    validate_transaction_access(session, current_user, op.OP_1060006.value)
+
     client_ip = get_client_ip(request)
 
     try:
@@ -64,6 +69,8 @@ async def create_conversation(
     chat_controller: ChatControllerDep,
 ):
     """Create a new conversation."""
+    validate_transaction_access(session, current_user, op.OP_1060001.value)
+
     client_ip = get_client_ip(request)
 
     conversation = chat_controller.create_conversation(
@@ -81,6 +88,8 @@ async def list_conversations(
     per_page: int = 20,
 ):
     """List user conversations."""
+    validate_transaction_access(session, current_user, op.OP_1060003.value)
+
     if per_page > 100:
         per_page = 100
 
@@ -101,6 +110,8 @@ async def get_conversation(
     chat_controller: ChatControllerDep,
 ):
     """Get conversation with messages."""
+    validate_transaction_access(session, current_user, op.OP_1060005.value)
+
     conversation = chat_controller.get_conversation_with_messages(
         session, conversation_id, current_user.id
     )
@@ -126,6 +137,8 @@ async def update_conversation(
     chat_controller: ChatControllerDep,
 ):
     """Update a conversation."""
+    validate_transaction_access(session, current_user, op.OP_1060002.value)
+
     client_ip = get_client_ip(request)
 
     conversation = chat_controller.update_conversation(
