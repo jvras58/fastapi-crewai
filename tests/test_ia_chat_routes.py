@@ -11,7 +11,7 @@ def test_send_chat_message_new_conversation(
 ):
     """Test sending a chat message to create a new conversation."""
     mock_agent = Mock()
-    mock_agent.process_query.return_value = "Olá! Como posso ajudar você hoje?"
+    mock_agent.process_query.return_value = 'Olá! Como posso ajudar você hoje?'
     mock_agent_class.return_value = mock_agent
 
     chat_data = {
@@ -42,7 +42,7 @@ def test_send_chat_message_existing_conversation(
 ):
     """Test sending a message to an existing conversation."""
     mock_agent = Mock()
-    mock_agent.process_query.return_value = "Entendi sua pergunta!"
+    mock_agent.process_query.return_value = 'Entendi sua pergunta!'
     mock_agent_class.return_value = mock_agent
 
     chat_data = {
@@ -289,7 +289,7 @@ def test_update_conversation_invalid_data(client, token, conversation):
 def test_full_conversation_flow(mock_agent_class, client, token, user):
     """Test complete conversation flow: create, send messages, update."""
     mock_agent = Mock()
-    mock_agent.process_query.return_value = "Resposta da IA"
+    mock_agent.process_query.return_value = 'Resposta da IA'
     mock_agent_class.return_value = mock_agent
 
     conversation_data = {

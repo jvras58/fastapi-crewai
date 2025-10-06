@@ -18,11 +18,11 @@ class ConversationAgent:
     def create_conversation_agent(self) -> Agent:
         """Create a single optimized conversation agent."""
         return Agent(
-            role="Agente de Conversa Inteligente",
-            goal="Responder perguntas usando DB, RAG ou conhecimento geral, "
-            "com mínimo de chamadas.",
-            backstory="Você é um assistente eficiente que decide a melhor fonte "
-            "e responde diretamente.",
+            role='Agente de Conversa Inteligente',
+            goal='Responder perguntas usando DB, RAG ou conhecimento geral, '
+            'com mínimo de chamadas.',
+            backstory='Você é um assistente eficiente que decide a melhor fonte '
+            'e responde diretamente.',
             tools=[rag_search_tool, db_query_tool],
             llm=self.llm,
             verbose=False,
@@ -32,18 +32,18 @@ class ConversationAgent:
     def process_query(self, query: str) -> str:
         """Process a user query with single task to minimize API calls."""
         if not query or not query.strip():
-            return "Por favor, faça uma pergunta para que eu possa ajudá-lo."
+            return 'Por favor, faça uma pergunta para que eu possa ajudá-lo.'
 
         agent = self.create_conversation_agent()
 
         task = Task(
             description=(
                 f"Analise '{query}'. Use tools apenas se necessário "
-                "(DB para dados estruturados, RAG para documentos). "
-                "Responda diretamente se possível, sem chamadas extras."
+                '(DB para dados estruturados, RAG para documentos). '
+                'Responda diretamente se possível, sem chamadas extras.'
             ),
             agent=agent,
-            expected_output="Resposta final concisa à query.",
+            expected_output='Resposta final concisa à query.',
         )
 
         crew = Crew(
@@ -57,22 +57,22 @@ class ConversationAgent:
         try:
             result = crew.kickoff()
 
-            if hasattr(result, "raw"):
+            if hasattr(result, 'raw'):
                 response = str(result.raw).strip()
             else:
                 response = str(result).strip()
             if not response:
                 return (
-                    "Desculpe, não consegui processar sua pergunta. "
-                    "Pode tentar reformulá-la?"
+                    'Desculpe, não consegui processar sua pergunta. '
+                    'Pode tentar reformulá-la?'
                 )
 
             return response
 
         except Exception as e:
-            if "quota exceeded" in str(e).lower():
+            if 'quota exceeded' in str(e).lower():
                 local_llm = get_llm(use_local_fallback=True)
-                result = local_llm(query)[0]["generated_text"]
+                result = local_llm(query)[0]['generated_text']
                 return str(result).strip()
             else:
                 raise

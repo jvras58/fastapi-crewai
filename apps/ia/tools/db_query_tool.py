@@ -25,8 +25,8 @@ def db_query_tool(query: str) -> str:
 
     try:
         result = db.run_no_throw(query)
-        return str(result) if result else "Nenhum resultado encontrado."
+        return str(result) if result else 'Nenhum resultado encontrado.'
     except Exception as e:
-        return f"Erro ao executar query: {str(e)}"
+        return f'Erro ao executar query: {str(e)}'
     finally:
         engine.dispose()

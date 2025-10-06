@@ -34,9 +34,9 @@ from tests.factory.trasaction_factory import TransactonFactory
 from tests.factory.user_factory import UserFactory
 from tests.mock.mock_embeddings import MockEmbeddings
 
-os.environ.setdefault("CREWAI_DISABLE_TRACING", "true")
-os.environ.setdefault("CREWAI_LOG_LEVEL", "ERROR")
-os.environ.setdefault("OTEL_SDK_DISABLED", "true")
+os.environ.setdefault('CREWAI_DISABLE_TRACING', 'true')
+os.environ.setdefault('CREWAI_LOG_LEVEL', 'ERROR')
+os.environ.setdefault('OTEL_SDK_DISABLED', 'true')
 
 
 @pytest.fixture

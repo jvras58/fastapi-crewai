@@ -20,18 +20,17 @@ from apps.ia.services.rag_service import RAGService
 def test_conversation_agent():
     """Test conversation agent."""
 
-
     rag_service = RAGService()
     agent = ConversationAgent(rag_service)
 
     try:
-        response = agent.process_query("Olá, como você está?")
-        assert isinstance(response, str), f"Expected str, got {type(response)}"
-        assert len(response) > 0, "Response cannot be empty"
+        response = agent.process_query('Olá, como você está?')
+        assert isinstance(response, str), f'Expected str, got {type(response)}'
+        assert len(response) > 0, 'Response cannot be empty'
 
     except Exception as e:
         traceback.print_exc()
-        pytest.skip(f"API não configurada: {e}")
+        pytest.skip(f'API não configurada: {e}')
 
 
 def test_conversation_model_creation():
@@ -143,7 +142,7 @@ def test_get_user_conversations_with_pagination(
 def test_send_message_new_conversation(mock_agent_class, session, user):
     """Test sending a message to create a new conversation."""
     mock_agent = Mock()
-    mock_agent.process_query.return_value = "Olá! Como posso ajudar você?"
+    mock_agent.process_query.return_value = 'Olá! Como posso ajudar você?'
     mock_agent_class.return_value = mock_agent
 
     controller = ChatController()
@@ -172,7 +171,7 @@ def test_send_message_existing_conversation(
 ):
     """Test sending a message to an existing conversation."""
     mock_agent = Mock()
-    mock_agent.process_query.return_value = "Entendi sua pergunta!"
+    mock_agent.process_query.return_value = 'Entendi sua pergunta!'
     mock_agent_class.return_value = mock_agent
 
     controller = ChatController()
@@ -332,10 +331,10 @@ def test_conversation_agent_error_handling():
     rag_service = RAGService()
     agent = ConversationAgent(rag_service)
     try:
-        response = agent.process_query("")
+        response = agent.process_query('')
         assert isinstance(response, str)
         assert len(response) > 0
-        print(f"✅ Short message handled: {response}")
+        print(f'✅ Short message handled: {response}')
     except Exception as e:
         pytest.skip(f'API handling error: {e}')
 

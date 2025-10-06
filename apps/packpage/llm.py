@@ -14,13 +14,15 @@ def get_llm(use_local_fallback: bool = False):
     settings = get_settings()
     api_key = settings.GROQ_API_KEY
     if not api_key:
-        raise ValueError("GROQ_API_KEY not found in settings")
+        raise ValueError('GROQ_API_KEY not found in settings')
 
     if use_local_fallback:
-        return pipeline("text-generation", model="microsoft/phi-2", device="cpu")
+        return pipeline(
+            'text-generation', model='microsoft/phi-2', device='cpu'
+        )
 
     llm = LLM(
-        model="groq/llama-3.1-8b-instant",
+        model='groq/llama-3.1-8b-instant',
         api_key=api_key,
         temperature=0.7,
     )
