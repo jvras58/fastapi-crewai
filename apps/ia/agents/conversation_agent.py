@@ -76,5 +76,3 @@ class ConversationAgent:
                 return str(result).strip()
             else:
                 raise
-
-        return result
