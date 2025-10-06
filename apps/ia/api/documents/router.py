@@ -1,4 +1,4 @@
-"""Router for chat and conversation endpoints."""
+"""Router for document endpoints."""
 
 from typing import Annotated
 
@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from apps.core.api.authentication.controller import get_current_user
+from apps.core.api.transaction.enum_operation_code import (
+    EnumOperationCode as op,
+)
 from apps.core.database.session import get_session
 from apps.core.models.user import User
 from apps.ia.api.documents.controller import DocController
@@ -15,15 +18,15 @@ from apps.ia.api.documents.schemas import (
     DocumentUploadSchema,
 )
 from apps.packpage.client_ip import get_client_ip
+from apps.packpage.validate_transaction_acess import validate_transaction_access
 
 router = APIRouter()
 doc_controller = DocController()
 
-
 DbSession = Annotated[Session, Depends(get_session)]
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
-# TODO: implements Validations and Permissions com o (validate_transaction_access)
+
 @router.post('/documents', response_model=DocumentSchema)
 async def upload_document(
     request: Request,
@@ -32,6 +35,8 @@ async def upload_document(
     current_user: CurrentUser,
 ):
     """Upload a document to the knowledge base."""
+    validate_transaction_access(session, current_user, op.OP_1070001.value)
+
     client_ip = get_client_ip(request)
 
     try:
@@ -61,6 +66,8 @@ async def list_documents(
     content_type: str = None,  # Filter by content type
 ):
     """List documents in knowledge base with optional filters."""
+    validate_transaction_access(session, current_user, op.OP_1070003.value)
+
     if per_page > 100:
         per_page = 100
 
@@ -84,6 +91,8 @@ async def get_document(
     current_user: CurrentUser,
 ):
     """Get a specific document by ID."""
+    validate_transaction_access(session, current_user, op.OP_1070005.value)
+
     try:
         document = doc_controller.get_document_by_id(session, document_id)
         return document
@@ -101,6 +110,8 @@ async def delete_document(
     current_user: CurrentUser,
 ):
     """Delete a document from the knowledge base."""
+    validate_transaction_access(session, current_user, op.OP_1070004.value)
+
     try:
         doc_controller.delete_document(session, document_id)
         return {'message': 'Documento deletado com sucesso'}
@@ -119,6 +130,8 @@ async def update_document_status(
     current_user: CurrentUser,
 ):
     """Update document status."""
+    validate_transaction_access(session, current_user, op.OP_1070002.value)
+
     if status not in ['active', 'processed', 'deleted']:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -138,8 +151,12 @@ async def update_document_status(
 
 
 @router.get('/search')
-async def search_knowledge_base(q: str, current_user: CurrentUser, k: int = 5):
+async def search_knowledge_base(
+    q: str, session: DbSession, current_user: CurrentUser, k: int = 5
+):
     """Search the knowledge base using RAG."""
+    validate_transaction_access(session, current_user, op.OP_1070006.value)
+
     if k > 20:
         k = 20
 
@@ -161,6 +178,8 @@ async def search_documents_content(
     limit: int = 10,
 ):
     """Search documents by content in database."""
+    validate_transaction_access(session, current_user, op.OP_1070007.value)
+
     if limit > 50:
         limit = 50
 
