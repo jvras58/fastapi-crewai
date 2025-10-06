@@ -1,7 +1,5 @@
 """Advanced tests for RAG Service functionality."""
 
-import contextlib
-
 from apps.ia.services.rag_service import RAGService
 
 
@@ -10,10 +8,10 @@ def test_rag_service_concurrent_operations(mock_rag_embeddings):
     rag_service = RAGService()
 
     documents = [
-        ('FastAPI é um framework Python', {'type': 'framework'}),
-        ('Django é outro framework Python', {'type': 'framework'}),
-        ('React é uma biblioteca JavaScript', {'type': 'library'}),
-        ('Vue.js é um framework JavaScript', {'type': 'framework'}),
+        ("FastAPI é um framework Python", {"type": "framework"}),
+        ("Django é outro framework Python", {"type": "framework"}),
+        ("React é uma biblioteca JavaScript", {"type": "library"}),
+        ("Vue.js é um framework JavaScript", {"type": "framework"}),
     ]
 
     for content, metadata in documents:
@@ -21,8 +19,8 @@ def test_rag_service_concurrent_operations(mock_rag_embeddings):
 
     assert rag_service.get_document_count() == 4
 
-    python_results = rag_service.similarity_search('Python framework', k=2)
-    js_results = rag_service.similarity_search('JavaScript', k=2)
+    python_results = rag_service.similarity_search("Python framework", k=2)
+    js_results = rag_service.similarity_search("JavaScript", k=2)
 
     assert len(python_results) >= 1
     assert len(js_results) >= 1
@@ -30,8 +28,8 @@ def test_rag_service_concurrent_operations(mock_rag_embeddings):
     python_content = [r.page_content for r in python_results]
     js_content = [r.page_content for r in js_results]
 
-    assert any('Python' in content for content in python_content)
-    assert any('JavaScript' in content for content in js_content)
+    assert any("Python" in content for content in python_content)
+    assert any("JavaScript" in content for content in js_content)
 
 
 def test_rag_service_metadata_filtering(mock_rag_embeddings):
@@ -39,16 +37,16 @@ def test_rag_service_metadata_filtering(mock_rag_embeddings):
     rag_service = RAGService()
 
     docs_with_metadata = [
-        ('FastAPI documentation', {'category': 'docs', 'language': 'python'}),
-        ('FastAPI tutorial', {'category': 'tutorial', 'language': 'python'}),
-        ('JavaScript guide', {'category': 'docs', 'language': 'javascript'}),
-        ('Python basics', {'category': 'tutorial', 'language': 'python'}),
+        ("FastAPI documentation", {"category": "docs", "language": "python"}),
+        ("FastAPI tutorial", {"category": "tutorial", "language": "python"}),
+        ("JavaScript guide", {"category": "docs", "language": "javascript"}),
+        ("Python basics", {"category": "tutorial", "language": "python"}),
     ]
 
     for content, metadata in docs_with_metadata:
         rag_service.add_document_from_text(content, metadata)
 
-    results = rag_service.similarity_search('Python', k=3)
+    results = rag_service.similarity_search("Python", k=3)
     assert len(results) >= 2
 
 
@@ -56,14 +54,14 @@ def test_rag_service_large_document_handling(mock_rag_embeddings):
     """Test RAG service with large documents."""
     rag_service = RAGService()
 
-    large_content = 'FastAPI ' * 1000 + 'é um framework Python moderno.'
-    large_metadata = {'size': 'large', 'type': 'documentation'}
+    large_content = "FastAPI " * 1000 + "é um framework Python moderno."
+    large_metadata = {"size": "large", "type": "documentation"}
 
     rag_service.add_document_from_text(large_content, large_metadata)
 
-    results = rag_service.similarity_search('FastAPI framework', k=1)
+    results = rag_service.similarity_search("FastAPI framework", k=1)
     assert len(results) > 0
-    assert 'FastAPI' in results[0].page_content
+    assert "FastAPI" in results[0].page_content
 
 
 def test_rag_service_special_characters(mock_rag_embeddings):
@@ -71,19 +69,19 @@ def test_rag_service_special_characters(mock_rag_embeddings):
     rag_service = RAGService()
 
     special_docs = [
-        'FastAPI suporta acentuação: é, ç, ã, ñ',
+        "FastAPI suporta acentuação: é, ç, ã, ñ",
         "Códigos em Python: print('Olá, mundo!')",
-        'Símbolos especiais: @#$%^&*()[]{}',
-        'Emojis também: 🚀 🐍 ⚡ 📚',
+        "Símbolos especiais: @#$%^&*()[]{}",
+        "Emojis também: 🚀 🐍 ⚡ 📚",
     ]
 
     for i, content in enumerate(special_docs):
-        rag_service.add_document_from_text(content, {'doc_id': i})
+        rag_service.add_document_from_text(content, {"doc_id": i})
 
-    results1 = rag_service.similarity_search('acentuação', k=1)
+    results1 = rag_service.similarity_search("acentuação", k=1)
     assert len(results1) > 0
 
-    results2 = rag_service.similarity_search('Python print', k=1)
+    results2 = rag_service.similarity_search("Python print", k=1)
     assert len(results2) > 0
 
 
@@ -92,14 +90,14 @@ def test_rag_service_context_window_management(mock_rag_embeddings):
     rag_service = RAGService()
 
     for i in range(20):
-        content = f'Documento {i} sobre FastAPI. ' * 10
-        rag_service.add_document_from_text(content, {'doc_id': i})
+        content = f"Documento {i} sobre FastAPI. " * 10
+        rag_service.add_document_from_text(content, {"doc_id": i})
 
-    context = rag_service.get_relevant_context('FastAPI', max_tokens=100)
+    context = rag_service.get_relevant_context("FastAPI", max_tokens=100)
     assert len(context) > 0
     assert len(context.split()) <= 150
 
-    large_context = rag_service.get_relevant_context('FastAPI', max_tokens=500)
+    large_context = rag_service.get_relevant_context("FastAPI", max_tokens=500)
     assert len(large_context) >= len(context)
 
 
@@ -107,10 +105,10 @@ def test_rag_service_persistence_simulation(mock_rag_embeddings):
     """Test RAG service behavior when simulating database persistence."""
     rag_service1 = RAGService()
 
-    documents = ['FastAPI é rápido', 'Django é robusto', 'Flask é simples']
+    documents = ["FastAPI é rápido", "Django é robusto", "Flask é simples"]
 
     for i, doc in enumerate(documents):
-        rag_service1.add_document_from_text(doc, {'id': i})
+        rag_service1.add_document_from_text(doc, {"id": i})
 
     count1 = rag_service1.get_document_count()
     assert count1 == 3
@@ -125,9 +123,14 @@ def test_rag_service_error_handling(mock_rag_embeddings):
     """Test RAG service error handling scenarios."""
     rag_service = RAGService()
 
-    with contextlib.suppress(TypeError, ValueError):
-        rag_service.add_document_from_text(None, {})
-        raise AssertionError('Should have raised an error')
+    rag_service.add_document_from_text(None, {})
+    assert rag_service.get_document_count() == 0
+
+    rag_service.add_document_from_text("", {})
+    assert rag_service.get_document_count() == 0
+
+    rag_service.add_document_from_text("   ", {})
+    assert rag_service.get_document_count() == 0
 
     rag_service.add_document_from_text('Valid content', {})
     assert rag_service.get_document_count() == 1
@@ -137,6 +140,12 @@ def test_rag_service_error_handling(mock_rag_embeddings):
 
     results = rag_service.similarity_search('nonexistent query', k=0)
     assert len(results) == 0
+
+    results = rag_service.similarity_search("test query", k=-1)
+    assert len(results) == 0
+
+    results = rag_service.similarity_search("Valid", k=1)
+    assert len(results) > 0
 
 
 def test_rag_service_performance_characteristics(mock_rag_embeddings):
