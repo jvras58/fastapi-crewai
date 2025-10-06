@@ -326,7 +326,6 @@ def test_message_model_roles():
 
 def test_conversation_agent_error_handling():
     """Test conversation agent error handling."""
-    from apps.ia.services.rag_service import RAGService
 
     rag_service = RAGService()
     agent = ConversationAgent(rag_service)
