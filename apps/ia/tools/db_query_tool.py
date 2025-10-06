@@ -9,9 +9,9 @@ from sqlalchemy import create_engine
 from apps.packpage.settings import get_settings
 
 ALLOWED_TABLES = {
-    "ia_documents",
-    "ia_conversations",
-    "ia_messages",
+    'ia_documents',
+    'ia_conversations',
+    'ia_messages',
 }
 
 ALLOWED_VIEWS = {
@@ -39,9 +39,7 @@ def db_query_tool(query: str) -> str:
         str: Resultados da query em formato texto.
     """
     if not _is_query_safe(query):
-        return (
-            f"Erro: Query só pode acessar tabelas/views: {', '.join(ALLOWED_ENTITIES)}"
-        )
+        return f"Erro: Query só pode acessar tabelas/views: {', '.join(ALLOWED_ENTITIES)}"
 
     settings = get_settings()
     engine = create_engine(settings.DB_URL)
@@ -75,16 +73,19 @@ def _is_query_safe(query: str) -> bool:
     query_lower = query.lower()
 
     query_stripped = query_lower.strip()
-    if not (query_stripped.startswith("select") or query_stripped.startswith("with")):
+    if not (
+        query_stripped.startswith('select')
+        or query_stripped.startswith('with')
+    ):
         return False
 
     table_patterns = [
-        r"\bfrom\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-        r"\bjoin\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-        r"\binner\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-        r"\bleft\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-        r"\bright\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-        r"\bfull\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+        r'\bfrom\s+([a-zA-Z_][a-zA-Z0-9_]*)',
+        r'\bjoin\s+([a-zA-Z_][a-zA-Z0-9_]*)',
+        r'\binner\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)',
+        r'\bleft\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)',
+        r'\bright\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)',
+        r'\bfull\s+join\s+([a-zA-Z_][a-zA-Z0-9_]*)',
     ]
 
     referenced_entities = set()
@@ -98,14 +99,16 @@ def _is_query_safe(query: str) -> bool:
             return False
 
     dangerous_keywords = [
-        r"\binsert\b",
-        r"\bupdate\b",
-        r"\bdelete\b",
-        r"\bdrop\b",
-        r"\balter\b",
-        r"\bcreate\b",
-        r"\btruncate\b",
-        r"\bexec\b",
+        r'\binsert\b',
+        r'\bupdate\b',
+        r'\bdelete\b',
+        r'\bdrop\b',
+        r'\balter\b',
+        r'\bcreate\b',
+        r'\btruncate\b',
+        r'\bexec\b',
     ]
 
-    return all(not re.search(keyword, query_lower) for keyword in dangerous_keywords)
+    return all(
+        not re.search(keyword, query_lower) for keyword in dangerous_keywords
+    )
