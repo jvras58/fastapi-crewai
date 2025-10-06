@@ -24,6 +24,8 @@ dependencies = [
     "langchain-community>=0.3.30",
     "pymupdf>=1.26.4",
     "sentence-transformers>=5.1.1",
+    "embedchain>=0.0.18",
+    "crewai-tools>=0.75.0",
 ]
 [tool.setuptools.packages.find]
 where = ["apps"]

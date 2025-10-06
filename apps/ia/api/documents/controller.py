@@ -7,27 +7,24 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from apps.core.clients.rag_client import get_rag_tool
 from apps.core.models.user import User
 from apps.ia.agents.conversation_agent import ConversationAgent
 from apps.ia.api.documents.schemas import DocumentUploadSchema
 from apps.ia.models.document import Document
-from apps.ia.services.rag_service import RAGService
 from apps.packpage.generic_controller import GenericController
 
 
 class DocController(GenericController):
     """Controller for chat operations."""
 
-    def __init__(
-        self, rag_service: RAGService = None, init_agent: bool = True
-    ) -> None:
+    def __init__(self, init_agent: bool = False) -> None:
         """Initialize document controller."""
         super().__init__(Document)
-        self.rag_service = rag_service or RAGService()
         self.conversation_agent = None
         if init_agent:
             try:
-                self.conversation_agent = ConversationAgent(self.rag_service)
+                self.conversation_agent = ConversationAgent()
             except ValueError:
                 self.conversation_agent = None
 
@@ -73,18 +70,8 @@ class DocController(GenericController):
         session.add(document)
         session.commit()
 
-        metadata = document_data.json_metadata or {}
-        metadata.update(
-            {
-                'doc_id': document.id,
-                'title': document.str_title,
-                'source': f'document_{document.id}',
-            }
-        )
-
-        self.rag_service.add_document_from_text(
-            document_data.txt_content, metadata
-        )
+        rag_tool = get_rag_tool()
+        rag_tool.add(document.txt_content, data_type="text")
 
         document.dt_processed_at = datetime.now(UTC)
         session.commit()
@@ -122,7 +109,8 @@ class DocController(GenericController):
         self, query: str, k: int = 5
     ) -> list[dict[str, Any]]:
         """Search the knowledge base."""
-        docs = self.rag_service.similarity_search(query, k=k)
+        rag_tool = get_rag_tool()
+        docs = rag_tool.search(query, k=k)
 
         results = []
         for doc in docs:
@@ -164,6 +152,9 @@ class DocController(GenericController):
 
         if status == 'processed':
             document.dt_processed_at = datetime.now(UTC)
+            if document.txt_content:
+                rag_tool = get_rag_tool()
+                rag_tool.add(document.txt_content, data_type="text")
 
         return self.update(session, document)
 

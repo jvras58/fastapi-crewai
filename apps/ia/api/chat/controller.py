@@ -6,6 +6,7 @@ from typing import Any
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from apps.core.clients.ai_clients import get_conversation_agent
 from apps.core.models.user import User
 from apps.ia.agents.conversation_agent import ConversationAgent
 from apps.ia.api.chat.schemas import (
@@ -16,7 +17,6 @@ from apps.ia.api.chat.schemas import (
 )
 from apps.ia.models.conversation import Conversation
 from apps.ia.models.message import Message
-from apps.ia.services.rag_service import RAGService
 from apps.packpage.generic_controller import GenericController
 
 
@@ -29,8 +29,10 @@ class ChatController(GenericController):
         """Initialize chat controller."""
         super().__init__(Conversation)
         if conversation_agent is None:
-            rag_service = RAGService()
-            conversation_agent = ConversationAgent(rag_service)
+            try:
+                conversation_agent = get_conversation_agent()
+            except Exception:
+                conversation_agent = None
         self.conversation_agent = conversation_agent
 
     def save(self, db_session: Session, obj: Conversation) -> Conversation:
@@ -96,7 +98,10 @@ class ChatController(GenericController):
             session, conversation, chat_data.message, current_user, request_ip
         )
 
-        ai_response = self.conversation_agent.process_query(chat_data.message)
+        if self.conversation_agent:
+            ai_response = self.conversation_agent.process_query(chat_data.message)
+        else:
+            ai_response = "Agente de conversa não configurado."
 
         ai_message = self._save_ai_message(
             session, conversation, ai_response, current_user, request_ip
