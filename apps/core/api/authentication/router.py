@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from apps.core.api.authentication.controller import execute_user_login
 from apps.core.api.authentication.schemas import AccessToken
 from apps.core.database.session import Session, get_session
-from apps.core.utils.exceptions import IncorrectCredentialException
+from apps.packpage.exceptions import IncorrectCredentialException
 
 router = APIRouter()
 

@@ -9,14 +9,14 @@ from apps.core.api.authentication.schemas import TokenData
 from apps.core.api.user.controller import UserController
 from apps.core.database.session import Session, get_session
 from apps.core.models.user import User
-from apps.core.utils.exceptions import (
-    CredentialsValidationException,
-    IncorrectCredentialException,
-)
 from apps.core.utils.security import (
     create_access_token,
     extract_username,
     verify_password,
+)
+from apps.packpage.exceptions import (
+    CredentialsValidationException,
+    IncorrectCredentialException,
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/auth/token')

@@ -7,9 +7,10 @@ from apps.core.api.authentication.router import router as auth_router
 from apps.core.api.authorization.middleware import AuthorizationMiddleware
 from apps.core.api.authorization.router import router as authorization_router
 from apps.core.api.role.router import router as role_router
-from apps.core.api.text_processing.router import router as text_processing_router
 from apps.core.api.transaction.router import router as transaction_router
 from apps.core.api.user.router import router as user_router
+from apps.ia.api.chat.router import router as chat_router
+from apps.ia.api.documents.router import router as documents_router
 
 app = FastAPI(
     title='FastAPI Starter faster than ever',
@@ -44,8 +45,12 @@ app = FastAPI(
             'description': 'Operations with authorizations',
         },
         {
-            'name': 'Data Processing',
-            'description': 'Operations with data processing using AI',
+            'name': 'AI Chat',
+            'description': 'Operations with AI chat and conversation management',
+        },
+        {
+            'name': 'AI Documents',
+            'description': 'Operations with AI document management and RAG',
         },
     ],
 )
@@ -85,9 +90,8 @@ app.include_router(
 app.include_router(
     authorization_router, prefix='/authorization', tags=['Authorizations']
 )
-app.include_router(
-    text_processing_router, prefix='/text-processing', tags=['Text Processing']
-)
+app.include_router(chat_router, prefix='/ia', tags=['AI Chat'])
+app.include_router(documents_router, prefix='/ia', tags=['AI Documents'])
 # ----------------------------------
 
 

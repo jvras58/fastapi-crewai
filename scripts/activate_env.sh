@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script para ativar o ambiente virtual do uv
-# Uso: source activate_env.sh
+# Uso: source scripts/activate_env.sh
 
 if [ -f ".venv/bin/activate" ]; then
     source .venv/bin/activate

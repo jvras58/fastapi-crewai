@@ -8,7 +8,7 @@ from apps.core.models.authorization import Authorization
 from apps.core.models.role import Role
 from apps.core.models.transaction import Transaction
 from apps.core.models.user import User
-from apps.core.utils.exceptions import (
+from apps.packpage.exceptions import (
     AmbiguousAuthorizationException,
     CredentialsValidationException,
     IllegalAccessException,
@@ -16,7 +16,7 @@ from apps.core.utils.exceptions import (
 
 user_controller = UserController()
 
-
+# TODO: removed controller when adding packpages
 def validate_transaction_access(
     db_session: Session, current_user: User, op_code: str
 ) -> None:

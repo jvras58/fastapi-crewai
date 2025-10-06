@@ -5,8 +5,8 @@ from sqlalchemy import String, and_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from apps.core.utils.base_model import AbstractBaseModel
-from apps.core.utils.exceptions import (
+from apps.packpage.base_model import AbstractBaseModel
+from apps.packpage.exceptions import (
     IntegrityValidationException,
     ObjectNotFoundException,
 )

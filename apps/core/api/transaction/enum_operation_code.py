@@ -36,5 +36,18 @@ class EnumOperationCode(Enum):
     OP_1050003 = '1050003'   # Role - List
     OP_1050004 = '1050004'  # Role - Delete
     OP_1050005 = '1050005'  # Role - View
-    # --------------------- Text Processing - IA ---------------------
-    OP_2000001 = '2000001'  # Text Processing - Execute (CREATE)
+    # --------------------- Conversation ---------------------
+    OP_1060001 = '1060001'  # Conversation - Create
+    OP_1060002 = '1060002'  # Conversation - Update
+    OP_1060003 = '1060003'  # Conversation - List
+    OP_1060004 = '1060004'  # Conversation - Delete
+    OP_1060005 = '1060005'  # Conversation - View
+    OP_1060006 = '1060006'  # Conversation - Chat Message
+    # --------------------- Document ---------------------
+    OP_1070001 = '1070001'  # Document - Create
+    OP_1070002 = '1070002'  # Document - Update
+    OP_1070003 = '1070003'  # Document - List
+    OP_1070004 = '1070004'  # Document - Delete
+    OP_1070005 = '1070005'  # Document - View
+    OP_1070006 = '1070006'  # Search Base - via Document
+    OP_1070007 = '1070007'  # Search Content - via Document

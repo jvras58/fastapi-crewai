@@ -3,9 +3,9 @@ from sqlalchemy import select
 
 from apps.core.database.session import Session
 from apps.core.models.user import User
-from apps.core.utils.base_model import AbstractBaseModel
-from apps.core.utils.generic_controller import GenericController
 from apps.core.utils.security import get_password_hash
+from apps.packpage.base_model import AbstractBaseModel
+from apps.packpage.generic_controller import GenericController
 
 
 class UserController(GenericController):

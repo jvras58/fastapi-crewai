@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 from bcrypt import checkpw, gensalt, hashpw
 from jose import jwt
 
-from apps.core.utils.settings import get_settings
+from apps.packpage.settings import get_settings
 
 
 def create_access_token(data: dict) -> str:

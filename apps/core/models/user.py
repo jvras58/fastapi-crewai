@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from apps.core.utils.base_model import AbstractBaseModel
+from apps.packpage.base_model import AbstractBaseModel
 
 if TYPE_CHECKING:
     from apps.core.models.assignment import Assignment
+    from apps.ia.models.conversation import Conversation
 
 
 class User(AbstractBaseModel):
@@ -23,8 +24,11 @@ class User(AbstractBaseModel):
     password: Mapped[str] = mapped_column(name='str_password')
     email: Mapped[str] = mapped_column(name='str_email')
 
-    assignments: Mapped[list["Assignment"]] = relationship(
-        back_populates="user", lazy="subquery"
+    assignments: Mapped[list['Assignment']] = relationship(
+        back_populates='user', lazy='subquery'
+    )
+    conversations: Mapped[list['Conversation']] = relationship(
+        'Conversation', back_populates='user', lazy='select'
     )
     __table_args__ = (
         Index('idx_user_username', username, unique=True),
