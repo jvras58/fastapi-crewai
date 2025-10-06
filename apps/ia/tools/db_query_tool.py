@@ -14,9 +14,13 @@ ALLOWED_TABLES = {
     'ia_messages',
 }
 
-ALLOWED_VIEWS = {
-    # TODO: Adicionar views conforme necessário
-}
+ALLOWED_VIEWS = (
+    {
+        # Views serão adicionadas aqui conforme necessário
+    }
+    if False
+    else set()
+)
 
 # Todas as entidades permitidas (tabelas + views)
 ALLOWED_ENTITIES = ALLOWED_TABLES | ALLOWED_VIEWS
@@ -39,7 +43,7 @@ def db_query_tool(query: str) -> str:
         str: Resultados da query em formato texto.
     """
     if not _is_query_safe(query):
-        return f"Erro: Query só pode acessar tabelas/views: {', '.join(ALLOWED_ENTITIES)}"
+        return f"Erro: só pode acessar tabelas/views: {', '.join(ALLOWED_ENTITIES)}"
 
     settings = get_settings()
     engine = create_engine(settings.DB_URL)
