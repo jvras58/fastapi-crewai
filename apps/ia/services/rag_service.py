@@ -76,19 +76,21 @@ class RAGService:
 
             for text, metadata in zip(texts, metadatas, strict=True):
                 if text is None or not str(text).strip():
-                    logger.warning(f"Skipping invalid document: {text}")
+                    logger.warning(f'Skipping invalid document: {text}')
                     continue
 
                 valid_docs.append(str(text))
                 valid_metadatas.append(metadata)
 
             if not valid_docs:
-                logger.warning("No valid documents to add")
+                logger.warning('No valid documents to add')
                 return
 
             documents = [
                 Document(page_content=text, metadata=metadata)
-                for text, metadata in zip(valid_docs, valid_metadatas, strict=True)
+                for text, metadata in zip(
+                    valid_docs, valid_metadatas, strict=True
+                )
             ]
 
             chunked_docs = []
@@ -107,7 +109,7 @@ class RAGService:
 
         except Exception as e:
             logger.error(
-                f"Erro ao adicionar documentos ao RAG: {str(e)}", exc_info=True
+                f'Erro ao adicionar documentos ao RAG: {str(e)}', exc_info=True
             )
 
     def add_document_from_text(
