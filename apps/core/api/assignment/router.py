@@ -12,7 +12,9 @@ from apps.core.api.assignment.schemas import (
 )
 from apps.core.api.authentication.controller import get_current_user
 from apps.core.api.authorization.controller import validate_transaction_access
-from apps.core.api.transaction.enum_operation_code import EnumOperationCode as op
+from apps.core.api.transaction.enum_operation_code import (
+    EnumOperationCode as op,
+)
 from apps.core.database.session import get_session
 from apps.core.models.assignment import Assignment
 from apps.core.models.user import User
