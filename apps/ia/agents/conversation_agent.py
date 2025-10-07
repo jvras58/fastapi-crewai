@@ -43,14 +43,19 @@ class ConversationAgent:
         if not query or not query.strip():
             return "Por favor, faça uma pergunta para que eu possa ajudá-lo."
 
-        # Se não está configurado, usar resposta simples do LLM
+        # Se não está configurado, usar resposta simples do LLM Sem ferramentas
         if not self.is_configured:
             try:
-                # Resposta direta usando apenas o LLM
-                return (
-                    f"Resposta para '{query}': Esta é uma resposta de teste "
-                    "do agente. O sistema RAG não está totalmente configurado, "
-                    "mas posso responder diretamente usando o LLM configurado."
+                return Agent(
+                    role="Agente de Conversa Inteligente",
+                    goal="Lidar com conversas",
+                    backstory="Você é um assistente eficiente que decide a melhor fonte"
+                    "e responde diretamente.",
+                    tools=[],
+                    llm=self.llm,
+                    verbose=False,
+                    max_iter=3,
+                    cache=True,
                 )
             except Exception:
                 return (
