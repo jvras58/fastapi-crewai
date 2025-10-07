@@ -26,6 +26,7 @@ dependencies = [
     "sentence-transformers>=5.1.1",
     "embedchain>=0.0.18",
     "crewai-tools>=0.75.0",
+    "google-generativeai>=0.8.5",
 ]
 [tool.setuptools.packages.find]
 where = ["apps"]
