@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     DB_URL: str
     GROQ_API_KEY: str
     GOOGLE_API_KEY: str | None = None
+    EMBEDDINGS_GOOGLE_API_KEY: str | None = None
     SECURITY_ALGORITHM: str = 'HS256'
     SECURITY_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 

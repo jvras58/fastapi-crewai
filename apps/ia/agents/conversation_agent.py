@@ -11,15 +11,17 @@ class ConversationAgent:
     """Optimized Agent for conversations with RAG and DB support."""
 
     def __init__(self):
+
         try:
             self.rag_tool = get_rag_tool()
             self.rag_tool.add(data_type="web_page", url="https://fastapi.tiangolo.com/")
             self.llm = get_llm()
             self.is_configured = True
-        except Exception:
-            # FIXME: Fallback quando RAG não está configurado
+        except Exception as e:
+            print(f"⚠️  Agente em modo limitado: {e}")
+            # Fallback quando RAG/LLM não estão configurados
             self.rag_tool = None
-            self.llm = get_llm()
+            self.llm = None
             self.is_configured = False
 
     def create_conversation_agent(self) -> Agent:
