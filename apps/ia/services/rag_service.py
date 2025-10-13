@@ -6,6 +6,7 @@ from typing import Any
 from uuid import uuid4
 
 import numpy as np
+import pandas as pd
 from langchain.embeddings.base import Embeddings
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -20,10 +21,10 @@ logger = logging.getLogger(__name__)
 class RAGService:
     """Service for document processing, embedding and semantic search using RAG."""
 
-    def __init__(self):
+    def __init__(self, embeddings=None, db_url=None):
         """Initialize RAG service with embeddings and vector store."""
         self.settings = get_settings()
-        self.embeddings = self._setup_embeddings()
+        self.embeddings = embeddings or self._setup_embeddings()
         self.vector_store: FAISS | None = None
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -31,6 +32,7 @@ class RAGService:
             length_function=len,
         )
         self.documents: list[Document] = []
+        self.llm = self.settings.llm
 
     def _setup_embeddings(self) -> Embeddings:
         """Setup local HuggingFace embeddings."""
@@ -71,26 +73,9 @@ class RAGService:
             if metadatas is None:
                 metadatas = [{'source': f'doc_{uuid4()}'} for _ in texts]
 
-            valid_docs = []
-            valid_metadatas = []
-
-            for text, metadata in zip(texts, metadatas, strict=True):
-                if text is None or not str(text).strip():
-                    logger.warning(f'Skipping invalid document: {text}')
-                    continue
-
-                valid_docs.append(str(text))
-                valid_metadatas.append(metadata)
-
-            if not valid_docs:
-                logger.warning('No valid documents to add')
-                return
-
             documents = [
                 Document(page_content=text, metadata=metadata)
-                for text, metadata in zip(
-                    valid_docs, valid_metadatas, strict=True
-                )
+                for text, metadata in zip(texts, metadatas, strict=True)
             ]
 
             chunked_docs = []
@@ -111,6 +96,7 @@ class RAGService:
             logger.error(
                 f'Erro ao adicionar documentos ao RAG: {str(e)}', exc_info=True
             )
+            raise
 
     def add_document_from_text(
         self, text: str, metadata: dict[str, Any] | None = None
@@ -178,3 +164,80 @@ class RAGService:
             self.vector_store = FAISS.load_local(
                 path, self.embeddings, allow_dangerous_deserialization=True
             )
+
+    def enrich_and_load_data(self, csv_path: str) -> None:
+        """Reuse LLM para enriquecer CSV."""
+        try:
+            df = pd.read_csv(csv_path)
+            enriched_texts = []
+            enriched_metadatas = []
+
+            logger.info(f"Processando {len(df)} registros do CSV: {csv_path}")
+
+            for idx, row in df.iterrows():
+                try:
+                    prompt = f"""Enriqueça as seguintes informações sobre \
+esta tinta Suvinil:
+
+                    Dados originais: {row.to_dict()}
+
+                    Por favor, forneça uma descrição detalhada e técnica \
+                    desta tinta, incluindo:
+                    - Características técnicas específicas
+                    - Aplicações recomendadas
+                    - Benefícios únicos
+                    - Cuidados de aplicação
+
+                    Responda de forma estruturada e profissional."""
+
+                    enriched_desc = self.llm.invoke(prompt).content
+
+                    combined_text = f"""
+                    PRODUTO: {row.get("nome", "N/A")}
+
+                    DADOS ORIGINAIS:
+                    {row.to_dict()}
+
+                    DESCRIÇÃO ENRIQUECIDA:
+                    {enriched_desc}
+                    """
+
+                    enriched_texts.append(combined_text)
+                    enriched_metadatas.append(
+                        {
+                            "source": csv_path,
+                            "row_index": idx,
+                            "product_name": row.get("nome", f"produto_{idx}"),
+                            "enriched": True,
+                        }
+                    )
+
+                    logger.debug(f"Processado produto {idx + 1}/{len(df)}")
+
+                except Exception as e:
+                    logger.error(f"Erro ao processar linha {idx}: {str(e)}")
+                    # Adicionar dados originais mesmo sem enriquecimento
+                    enriched_texts.append(str(row.to_dict()))
+                    enriched_metadatas.append(
+                        {
+                            "source": csv_path,
+                            "row_index": idx,
+                            "product_name": row.get("nome", f"produto_{idx}"),
+                            "enriched": False,
+                            "error": str(e),
+                        }
+                    )
+
+            # Adicionar todos os documentos enriquecidos ao RAG
+            self.add_documents(enriched_texts, enriched_metadatas)
+
+            logger.info(
+                f"Carregamento concluído: {len(enriched_texts)} documentos adicionados"
+            )
+
+        except Exception as e:
+            logger.error(
+                f"Erro ao carregar e enriquecer dados do CSV {csv_path}: {str(e)}",
+                exc_info=True,
+            )
+            raise
