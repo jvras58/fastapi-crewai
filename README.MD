@@ -1,12 +1,12 @@
 <h1 align="center"
 
-## 📝 Sobre o Projeto com FastAPI + CrewAI
+## 📝 Sobre o Projeto com FastAPI
 
 Este projeto é uma aplicação backend construída com **FastAPI**, projetada para gerenciar usuários, papéis, permissões e transações em um sistema baseado em **Role-Based Access Control (RBAC)**. A API suporta autenticação via JWT, autorização granular, auditoria de ações e integração com um banco de dados usando SQLAlchemy como ORM. 
 </h1>
 
 <p align="center">
-   Este projeto utiliza o FastAPI para servir Agentes inteligentes utilizando o CrewAI
+   Este projeto utiliza o FastAPI para servir uma API
 </p>
 
 <p align="center">

@@ -1,16 +1,13 @@
 [project]
-name = "FastAPI-CrewAI"
-version = "0.1.0"
-description = "Basic CRUD API with FastAPI, SQLAlchemy, and Alembic, integrated with CrewAI and LangChain for advanced AI capabilities."
+name = "FastAPI"
+version = "1.0.0"
+description = "Basic CRUD API with FastAPI, SQLAlchemy, and Alembic"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.16.5",
     "bcrypt>=4.3.0",
-    "crewai>=0.186.1",
     "fastapi>=0.116.1",
-    "langchain>=0.3.27",
-    "langchain-google-genai>=2.1.10",
     "psycopg2-binary>=2.9.0",
     "pydantic-settings>=2.10.1",
     "pydantic[email]>=2.11.9",
